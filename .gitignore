@@ -1,0 +1,38 @@
+# Vagrant输出目录
+.vagrant/
+
+# Python编译文件
+*.pyc
+
+# Gradle输出目录
+.gradle/
+build/
+bin/
+
+# Maven输出目录
+target/
+
+# JVM及sysdig性能数据记录文件
+*.jfr
+*.scap
+
+# Wor临时文件
+~$*
+
+# Eclipse项目文件
+.classpath
+.project
+.settings/
+
+# idea 项目配置文件
+*.idea/
+*.iml
+
+# Editplus 自动备份文件
+*.bak
+
+# 自动生成的log文件
+*.log
+logs/
+
+overlays/
