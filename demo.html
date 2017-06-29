@@ -165,6 +165,7 @@
             idField: 'id',
             pagination: true,
             rownumbers: true,
+            enableChecked: true,
             pageNumber: 1,
             pageSize: 15,
             columns: [
@@ -192,7 +193,7 @@
                 }
             ],
             onLoadSuccess: function () {
-
+                alert("nothing to do...");
             },
             onDblClickRow: function (index, row) {
                 alert("row index is " + index);

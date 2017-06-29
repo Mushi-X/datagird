@@ -48,7 +48,6 @@
         queryParams: {},
         enableChecked: false,
         columns: undefined,
-        frozenColumns: undefined,
         rownumbers: true,                 // 显示行号
         pagination: true,                 // 是否分页
         pageNumber: 1,
