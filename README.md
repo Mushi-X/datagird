@@ -4,6 +4,14 @@
 
 设计理念参考 easyui 的 [datagrid](http://www.jeasyui.com/demo/main/index.php?plugin=DataGrid&theme=default&dir=ltr&pitem=&sort=)
 
+兼容IE8+、Chrome、Firfox等主流浏览器
+
+详细使用点击[这里](http://192.168.0.229/kingyea/js-plugin-kytable/wikis/home)
+
+### 演示页面说明
+
+由于Chrome浏览器限制。无法在本地文件中进行异步请求。建议查看demo时使用Firefox或者IE浏览器
+
 ### 使用方式
 
 首先，需要引入 artTemplate 模板，通过一个独立的页面，将 tableTemplate.html 中的文件引入到代码中
