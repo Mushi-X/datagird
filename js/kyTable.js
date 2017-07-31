@@ -171,7 +171,7 @@
         $(target).after(html);
 
         // 绑定翻页事件
-        $(".page-box li a").on("click", function () {
+        $(target).next('.fenye').find(".page-box li a").on("click", function () {
             // 表示按钮不可点
             if ($(this).hasClass("hui") || $(this).hasClass("cur")) {
                 return;
@@ -267,6 +267,8 @@
         });
         // 绑定行单击事件
         $(target).find(".kyTable-row").click(function () {
+            console.log(this);
+            console.log($(this));
             // 表示空行,不进行任何操作
             if ($(this).hasClass("empty-row")) {
                 return;
@@ -301,7 +303,7 @@
     // 选中指定行
     function checkRow(target, index) {
         // 首先更新选中状态
-        var row = $("#kyTable-row-" + index);
+        var row = $(target).find("#kyTable-row-" + index);
         // 表示已经选中，不做任何操作
         if (row.hasClass("selected")) {
             return;
@@ -319,9 +321,7 @@
 
             var idField = options.idField;
             var isExist = false;
-            for (var i = 0;
-                 i < selectedRows.length;
-                 i++) {
+            for (var i = 0; i < selectedRows.length; i++) {
                 if (selectedRows[i][idField] == rows[index][idField]) {
                     isExist = true;
                 }
@@ -336,9 +336,7 @@
 
         // 全选时设置表格的 全选 框为选中
         var isAllChecked = true;
-        for (var i = 0;
-             i < rows.length;
-             i++) {
+        for (var i = 0; i < rows.length; i++) {
             if (!$("#kyTable-row-" + i).find(".kyTableCheckbox").prop("checked")) {
                 isAllChecked = false;
             }
@@ -351,7 +349,7 @@
     // 取消选中指定行
     function unCheckRow(target, index) {
         // 首先更新选中状态
-        var row = $("#kyTable-row-" + index);
+        var row = $(target).find("#kyTable-row-" + index);
         // 表示没有被选中，不做任何操作
         if (!row.hasClass("selected")) {
             return;

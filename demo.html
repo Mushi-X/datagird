@@ -19,6 +19,7 @@
 <h1>kyTable Demo</h1>
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
 <table id="demoTable"></table>
+<table id="demoTable2"></table>
 </body>
 
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -193,10 +194,49 @@
                 }
             ],
             onLoadSuccess: function () {
-                alert("nothing to do...");
             },
             onDblClickRow: function (index, row) {
-                alert("row index is " + index);
+            }
+        });
+
+        $("#demoTable2").kyTable({
+            title: "办公设备",
+            method: "get",
+            url: 'data.json',
+            border: true,
+            idField: 'id',
+            pagination: true,
+            rownumbers: true,
+            enableChecked: true,
+            pageNumber: 1,
+            pageSize: 15,
+            columns: [
+                {field: 'id', title: 'id', hidden: true},
+                {field: 'name', title: '名称', width: 100, sortable: true},
+                {
+                    field: 'status', title: '状态', width: 100,
+                    formatter: function (val, row, index) {
+                        switch (val) {
+                            case "1" :
+                                return "状态为一";
+                                break;
+                            case "2" :
+                                return "状态为二";
+                                break;
+
+                        }
+                    }
+                },
+                {
+                    field: 'oper', title: '操作', width: 100,
+                    formatter: function (val, row, index) {
+                        return "<a class='btn-blue' href='javascript:void(0)'>按钮</a>"
+                    }
+                }
+            ],
+            onLoadSuccess: function () {
+            },
+            onDblClickRow: function (index, row) {
             }
         });
     });
