@@ -267,8 +267,6 @@
         });
         // 绑定行单击事件
         $(target).find(".kyTable-row").click(function () {
-            console.log(this);
-            console.log($(this));
             // 表示空行,不进行任何操作
             if ($(this).hasClass("empty-row")) {
                 return;
