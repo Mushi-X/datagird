@@ -1,20 +1,20 @@
-<%--
+<!--
 Created by IntelliJ IDEA.
 User: Mushi
 Date: 2017/5/15
 Time: 16:49
 To change this template use File | Settings | File Templates.
---%>
+-->
 
-<%-- kyTable 表格模板 --%>
+<!-- kyTable 表格模板 -->
 <script id="kyTable" type="text/html">
-    <%-- 表头 --%>
+    <!-- 表头 -->
     <tr id="kyTable-header">
-        <%-- 是否显示行号 --%>
+        <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <th style="min-width:36px;max-width:36px;"></th>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <th style="min-width:36px;max-width:36px;text-align: center;">
             <input type="checkbox" id="kyTableAllCheckbox"/>
@@ -24,20 +24,20 @@ To change this template use File | Settings | File Templates.
         {{col.title | outputTitle:col,totalWidth,options.queryParams}}
         {{/each}}
     </tr>
-    <%-- 表格主体 --%>
+    <!-- 表格主体 -->
     {{each rows as row index}}
     <tr id="kyTable-row-{{index}}" class="kyTable-row" index="{{index}}">
-        <%-- 是否显示行号 --%>
+        <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + index + 1}}</td>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <td class="center">
             <input type="checkbox" class="kyTableCheckbox"/>
         </td>
         {{/if}}
-        <%-- 遍历每列数据 --%>
+        <!-- 遍历每列数据 -->
         {{each options.columns as col j}}
         {{if row[col.field] != undefined}}
         {{row[col.field] | outputContent:row,index,col}}
@@ -47,14 +47,16 @@ To change this template use File | Settings | File Templates.
         {{/each}}
     </tr>
     {{/each}}
-    <%-- 空行遍历 --%>
+    <!-- 空行遍历 -->
     {{each emptyRows as emptyRow index}}
     <tr class="kyTable-row empty-row">
         {{if options.rownumbers}}
-        <%--<td class="center">{{(options.pageNumber - 1 ) * options.pageSize + rows.length + index + 1}}</td>--%>
+        <!--
+        <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + rows.length + index + 1}}</td>
+        -->
         <td></td>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <td></td>
         {{/if}}
@@ -63,7 +65,7 @@ To change this template use File | Settings | File Templates.
     {{/each}}
 </script>
 
-<%-- kyTable 表格分页模板 --%>
+<!-- kyTable 表格分页模板 -->
 <script id="kyTablePage" type="text/html">
     <div class="fenye">
         <div class="left list-show">第{{rowBegin}}到{{rowEnd}}条记录，共{{totalCount}}条</div>
@@ -91,16 +93,32 @@ To change this template use File | Settings | File Templates.
         // 列是否可排序
         if (column.sortable == true) {
             th.addClass("sortable");
-            if(column.field == queryParams.sort && queryParams.order == "desc"){
+            if (column.field == queryParams.sort && queryParams.order == "desc") {
                 th.addClass("down");
             }
-            else if(column.field == queryParams.sort && queryParams.order == "asc"){
+            else if (column.field == queryParams.sort && queryParams.order == "asc") {
                 th.addClass("up");
             }
         }
         // 列是否隐藏
         if (column.hidden == true) {
             th.css("display", "none");
+        }
+
+        switch (column.align) {
+            case 'left':
+                th.css("text-align", "left");
+                break;
+            case 'center':
+                console.log(th);
+                th.css("text-align", "center");
+                break;
+            case 'right':
+                th.css("text-align", "right");
+                break;
+            default:
+                th.css("text-align", "left");
+                break;
         }
         // 宽度自适应
         var columnWidth = column.width == undefined ? 100 : column.width;
@@ -114,11 +132,33 @@ To change this template use File | Settings | File Templates.
         if (column.hidden == true) {
             return "";
         }
+        var td = $("td");
+        // 是否需要格式化输出
         if (column.formatter != undefined && column.formatter != null) {
-            return "<td>" + column.formatter(value, row, index) + "</td>";
+            td.html(column.formatter(value, row, index))
+            return td[0].outerHTML;
         }
-        var val = "<td>" + value + "</td>";
-        return val;
+        else {
+            td.html(value);
+        }
+
+        var titleAlign = column.titleAlign || column.align;
+
+        switch (titleAlign) {
+            case 'left':
+                td.css("text-align", "left");
+                break;
+            case 'center':
+                td.css("text-align", "center");
+                break;
+            case 'right':
+                td.css("text-align", "right");
+                break;
+            default:
+                td.css("text-align", "left");
+                break;
+        }
+        return td[0].outerHTML;
     });
 
     // 格式化输出空行

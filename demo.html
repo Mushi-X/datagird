@@ -25,16 +25,23 @@
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="js/template.js" type="text/javascript"></script>
 <script src="js/kyTable.js" type="text/javascript"></script>
+<!--
+Created by IntelliJ IDEA.
+User: Mushi
+Date: 2017/5/15
+Time: 16:49
+To change this template use File | Settings | File Templates.
+-->
 
 <!-- kyTable 表格模板 -->
 <script id="kyTable" type="text/html">
-    <%-- 表头 --%>
+    <!-- 表头 -->
     <tr id="kyTable-header">
-        <%-- 是否显示行号 --%>
+        <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <th style="min-width:36px;max-width:36px;"></th>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <th style="min-width:36px;max-width:36px;text-align: center;">
             <input type="checkbox" id="kyTableAllCheckbox"/>
@@ -44,20 +51,20 @@
         {{col.title | outputTitle:col,totalWidth,options.queryParams}}
         {{/each}}
     </tr>
-    <%-- 表格主体 --%>
+    <!-- 表格主体 -->
     {{each rows as row index}}
     <tr id="kyTable-row-{{index}}" class="kyTable-row" index="{{index}}">
-        <%-- 是否显示行号 --%>
+        <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + index + 1}}</td>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <td class="center">
             <input type="checkbox" class="kyTableCheckbox"/>
         </td>
         {{/if}}
-        <%-- 遍历每列数据 --%>
+        <!-- 遍历每列数据 -->
         {{each options.columns as col j}}
         {{if row[col.field] != undefined}}
         {{row[col.field] | outputContent:row,index,col}}
@@ -67,16 +74,16 @@
         {{/each}}
     </tr>
     {{/each}}
-    <%-- 空行遍历 --%>
+    <!-- 空行遍历 -->
     {{each emptyRows as emptyRow index}}
     <tr class="kyTable-row empty-row">
         {{if options.rownumbers}}
-        <%--
+        <!--
         <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + rows.length + index + 1}}</td>
-        --%>
+        -->
         <td></td>
         {{/if}}
-        <%-- 是否可以复选 --%>
+        <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <td></td>
         {{/if}}
@@ -84,6 +91,8 @@
     </tr>
     {{/each}}
 </script>
+
+<!-- kyTable 表格分页模板 -->
 <script id="kyTablePage" type="text/html">
     <div class="fenye">
         <div class="left list-show">第{{rowBegin}}到{{rowEnd}}条记录，共{{totalCount}}条</div>
@@ -101,6 +110,7 @@
         <div class=" clearfix"></div>
     </div>
 </script>
+
 <script type="text/javascript">
     // 格式化输出表格标题
     template.helper('outputTitle', function (title, column, totalWidth, queryParams) {
@@ -121,6 +131,22 @@
         if (column.hidden == true) {
             th.css("display", "none");
         }
+
+        var titleAlign = column.titleAlign || column.align;
+        switch (titleAlign) {
+            case 'left':
+                th.css("text-align", "left");
+                break;
+            case 'center':
+                th.css("text-align", "center");
+                break;
+            case 'right':
+                th.css("text-align", "right");
+                break;
+            default:
+                th.css("text-align", "left");
+                break;
+        }
         // 宽度自适应
         var columnWidth = column.width == undefined ? 100 : column.width;
         th.css("width", columnWidth / totalWidth * 100 + "%");
@@ -133,11 +159,30 @@
         if (column.hidden == true) {
             return "";
         }
+        var td = $("<td>");
+        // 是否需要格式化输出
         if (column.formatter != undefined && column.formatter != null) {
-            return "<td>" + column.formatter(value, row, index) + "</td>";
+            td.html(column.formatter(value, row, index))
         }
-        var val = "<td>" + value + "</td>";
-        return val;
+        else {
+            td.html(value);
+        }
+
+        switch (column.align) {
+            case 'left':
+                td.css("text-align", "left");
+                break;
+            case 'center':
+                td.css("text-align", "center");
+                break;
+            case 'right':
+                td.css("text-align", "right");
+                break;
+            default:
+                td.css("text-align", "left");
+                break;
+        }
+        return td[0].outerHTML;
     });
 
     // 格式化输出空行
@@ -155,7 +200,6 @@
         return tr;
     });
 </script>
-
 <script type="text/javascript">
     $(function () {
         $("#demoTable").kyTable({
@@ -173,7 +217,7 @@
                 {field: 'id', title: 'id', hidden: true},
                 {field: 'name', title: '名称', width: 100, sortable: true},
                 {
-                    field: 'status', title: '状态', width: 100,
+                    field: 'status', title: '状态', width: 100, align: 'center', titleAlign:'left',
                     formatter: function (val, row, index) {
                         switch (val) {
                             case "1" :
@@ -189,48 +233,11 @@
                 {
                     field: 'oper', title: '操作', width: 100,
                     formatter: function (val, row, index) {
-                        return "<a href='javascript:void(0)'>按钮</a>"
-                    }
-                }
-            ],
-            onLoadSuccess: function () {
-            },
-            onDblClickRow: function (index, row) {
-            }
-        });
-
-        $("#demoTable2").kyTable({
-            title: "办公设备",
-            method: "get",
-            url: 'data.json',
-            border: true,
-            idField: 'id',
-            pagination: true,
-            rownumbers: true,
-            enableChecked: true,
-            pageNumber: 1,
-            pageSize: 15,
-            columns: [
-                {field: 'id', title: 'id', hidden: true},
-                {field: 'name', title: '名称', width: 100, sortable: true},
-                {
-                    field: 'status', title: '状态', width: 100,
-                    formatter: function (val, row, index) {
-                        switch (val) {
-                            case "1" :
-                                return "状态为一";
-                                break;
-                            case "2" :
-                                return "状态为二";
-                                break;
-
+                        if (index % 2 == 0) {
+                            return "<a class='btn-blue' href='javascript:void(0)'>按钮</a>"
+                        } else {
+                            return "<button class='btn-blue' href='javascript:void(0)'>按钮</button>"
                         }
-                    }
-                },
-                {
-                    field: 'oper', title: '操作', width: 100,
-                    formatter: function (val, row, index) {
-                        return "<a class='btn-blue' href='javascript:void(0)'>按钮</a>"
                     }
                 }
             ],

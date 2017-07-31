@@ -253,7 +253,7 @@
     function bindEvent(target) {
         var options = $(target).kyTable('options');
         // 绑定表头排序事件
-        $(target).find("th.sortable").click(function () {
+        $(target).find("th.sortable").click(function (event) {
             var order = "desc";
             var field = $(this).attr("field");
             // 只有当前元素是降序排序时才更新为升序，否则默认为降序排序
@@ -264,9 +264,10 @@
             queryParam.sort = field;
             queryParam.order = order;
             reload(target, queryParam);
+            event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行单击事件
-        $(target).find(".kyTable-row").click(function () {
+        $(target).find(".kyTable-row").click(function (event) {
             // 表示空行,不进行任何操作
             if ($(this).hasClass("empty-row")) {
                 return;
@@ -279,13 +280,15 @@
             } else {
                 unCheckRow(target, index);
             }
+            event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行双击事件
-        $(target).find(".kyTable-row").dblclick(function () {
+        $(target).find(".kyTable-row").dblclick(function (event) {
             var rows = $.data(target, "kyTable").rows;
             var index = $(this).attr("index");
             $.data(target, "kyTable").options.onDblClickRow(index, rows[index]);
-        })
+            event.stopPropagation();    //  阻止事件冒泡
+        });
         // 绑定 全选/取消全选 事件
         if (options.enableChecked) {
             $(target).find("#kyTableAllCheckbox").on("click", function () {
@@ -296,6 +299,10 @@
                 }
             });
         }
+
+        $(target).find("a,button").click(function (event) {
+            event.stopPropagation();    //  阻止事件冒泡
+        });
     }
 
     // 选中指定行
