@@ -1,4 +1,4 @@
-# kyTable 
+# kyDatagrid 
 
 金越表格框架，基于 [jqury](https://jquery.com/) 和 [artTemplate](https://github.com/aui/art-template) 开发，使用前需要引入 `jquery` 和 `artTemplate`
 
@@ -6,7 +6,7 @@
 
 兼容IE8+、Chrome、Firfox等主流浏览器
 
-详细使用点击[这里](http://192.168.0.229/kingyea/js-plugin-kytable/wikis/home)
+详细使用点击[这里](http://192.168.0.229/kingyea/js-plugin-kyDatagrid/wikis/home)
 
 ### 演示页面说明
 
@@ -24,7 +24,7 @@
 然后，通过 js 确定获取数据的方式，以及数据绑定规则
 
 ```javascript
-$("#demoTable").kyTable({
+$("#demoTable").kyDatagrid({
     method: "get",
     url: 'data.json',
     idField: 'id',

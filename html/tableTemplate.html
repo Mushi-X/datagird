@@ -6,10 +6,10 @@ Time: 16:49
 To change this template use File | Settings | File Templates.
 -->
 
-<!-- kyTable 表格模板 -->
-<script id="kyTable" type="text/html">
+<!-- kyDatagrid 表格模板 -->
+<script id="kyDatagrid" type="text/html">
     <!-- 表头 -->
-    <tr id="kyTable-header">
+    <tr id="kyDatagrid-header">
         <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <th style="min-width:36px;max-width:36px;"></th>
@@ -17,7 +17,7 @@ To change this template use File | Settings | File Templates.
         <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <th style="min-width:36px;max-width:36px;text-align: center;">
-            <input type="checkbox" id="kyTableAllCheckbox"/>
+            <input type="checkbox" id="kyDatagridAllCheckbox"/>
         </th>
         {{/if}}
         {{each options.columns as col index}}
@@ -26,7 +26,7 @@ To change this template use File | Settings | File Templates.
     </tr>
     <!-- 表格主体 -->
     {{each rows as row index}}
-    <tr id="kyTable-row-{{index}}" class="kyTable-row" index="{{index}}">
+    <tr id="kyDatagrid-row-{{index}}" class="kyDatagrid-row" index="{{index}}">
         <!-- 是否显示行号 -->
         {{if options.rownumbers}}
         <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + index + 1}}</td>
@@ -34,7 +34,7 @@ To change this template use File | Settings | File Templates.
         <!-- 是否可以复选 -->
         {{if options.enableChecked}}
         <td class="center">
-            <input type="checkbox" class="kyTableCheckbox"/>
+            <input type="checkbox" class="kyDatagridCheckbox"/>
         </td>
         {{/if}}
         <!-- 遍历每列数据 -->
@@ -49,7 +49,7 @@ To change this template use File | Settings | File Templates.
     {{/each}}
     <!-- 空行遍历 -->
     {{each emptyRows as emptyRow index}}
-    <tr class="kyTable-row empty-row">
+    <tr class="kyDatagrid-row empty-row">
         {{if options.rownumbers}}
         <!--
         <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + rows.length + index + 1}}</td>
@@ -65,8 +65,8 @@ To change this template use File | Settings | File Templates.
     {{/each}}
 </script>
 
-<!-- kyTable 表格分页模板 -->
-<script id="kyTablePage" type="text/html">
+<!-- kyDatagrid 表格分页模板 -->
+<script id="kyDatagridPage" type="text/html">
     <div class="fenye">
         <div class="left list-show">第{{rowBegin}}到{{rowEnd}}条记录，共{{totalCount}}条</div>
         <ul class="right page-box">

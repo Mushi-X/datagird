@@ -8,13 +8,13 @@
 (function ($) {
 
     /**
-     * 定义kyTable方法
+     * 定义kyDatagrid方法
      * 根据参数类型判断 “初始化表格” 还是 “调用方法“
      */
-    $.fn.kyTable = function (options, param) {
+    $.fn.kyDatagrid = function (options, param) {
         // 类型为 string 表示调用方法
         if (typeof options == 'string') {
-            return $.fn.kyTable.methods[options](this, param);
+            return $.fn.kyDatagrid.methods[options](this, param);
         }
 
         // 不为 string 时初始化表格
@@ -23,24 +23,24 @@
             // jQuery.data( element )
             // jQuery.data( element, key )
             // jQuery.data( element, key, value )
-            // 获取当前对象存放的 kyTable 数据值,为undefined表示未初始化,否则表示已经初始化过
-            var state = $.data(this, 'kyTable');
+            // 获取当前对象存放的 kyDatagrid 数据值,为undefined表示未初始化,否则表示已经初始化过
+            var state = $.data(this, 'kyDatagrid');
 
             if (state) {  // 不为 undefined 表示初始化过
                 // jQuery.extend( target [, object1 ] [, objectN ] )
                 // 将两个或更多对象的内容合并到第一个对象。
                 $.extend(state.options, options);
             } else {      // 初始化
-                options = $.extend({}, $.fn.kyTable.defaults, $.fn.kyTable.parseOptions(this), options);
+                options = $.extend({}, $.fn.kyDatagrid.defaults, $.fn.kyDatagrid.parseOptions(this), options);
                 // 设置表格配置
-                $.data(this, 'kyTable', {options: options});
+                $.data(this, 'kyDatagrid', {options: options});
                 reload(this);
             }
         });
     };
 
     /** 表格默认配置 */
-    $.fn.kyTable.defaults = {
+    $.fn.kyDatagrid.defaults = {
         title: undefined,
         url: undefined,
         idField: "id",
@@ -63,9 +63,9 @@
     };
 
     /** 表格方法路由 */
-    $.fn.kyTable.methods = {
+    $.fn.kyDatagrid.methods = {
         options: function (jq) {
-            return $.data(jq[0], 'kyTable').options;
+            return $.data(jq[0], 'kyDatagrid').options;
         },
         reload: function (jq, params) {
             return jq.each(function () {
@@ -81,12 +81,12 @@
             return getSelected(jq[0]);
         },
         getSelections: function (jq) {
-            return $.data(jq[0], "kyTable").selectedRows == undefined ? [] : $.data(jq[0], "kyTable").selectedRows;
+            return $.data(jq[0], "kyDatagrid").selectedRows == undefined ? [] : $.data(jq[0], "kyDatagrid").selectedRows;
         }
     };
 
     /** 格式化表格参数 */
-    $.fn.kyTable.parseOptions = function (target) {
+    $.fn.kyDatagrid.parseOptions = function (target) {
         return {};
     };
 
@@ -109,9 +109,9 @@
             }
         }
         // 根据模板生成HTML
-        var html = template('kyTable', {rows: rows, emptyRows: emptyRows, options: options, totalWidth: totalWidth});
+        var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options, totalWidth: totalWidth});
         $(target).html(html);
-        $(target).addClass("data-table marb-10 kyTable");
+        $(target).addClass("data-table marb-10 kyDatagrid");
     }
 
     // 创建分页
@@ -159,7 +159,7 @@
         var rowEnd = pageNo * pageSize > totalCount ? totalCount : pageNo * pageSize;
 
         // 根据模板生成分页HTML
-        var html = template('kyTablePage', {
+        var html = template('kyDatagridPage', {
             totalCount: totalCount,
             pageNo: pageNo,
             pageSize: pageSize,
@@ -184,10 +184,10 @@
             }
             // 跳转页面
             else {
-                var options = $(target).kyTable('options');
+                var options = $(target).kyDatagrid('options');
                 options.pageNumber = pageno;
-                $.data(target, 'kyTable', {options: options});
-                $(target).kyTable('reload');
+                $.data(target, 'kyDatagrid', {options: options});
+                $(target).kyDatagrid('reload');
             }
         })
     }
@@ -195,7 +195,7 @@
     // 更新表格
     function reload(target, params) {
         // 获取表格基本配置
-        var options = $.data(target, 'kyTable').options;
+        var options = $.data(target, 'kyDatagrid').options;
 
         // 传入参数不为空时,不保存原来的查询条件
         if (params != undefined && typeof params == "object") {
@@ -228,16 +228,16 @@
                 bindEvent(target);
                 // 回调 onloadSuccess 方法
                 // 更新表格属性
-                var kyTableData = $.data(target, 'kyTable');
-                kyTableData.options = options;
-                kyTableData.rows = data.rows;
+                var kyDatagridData = $.data(target, 'kyDatagrid');
+                kyDatagridData.options = options;
+                kyDatagridData.rows = data.rows;
                 // 这里清空已经选择过的行记录
-                kyTableData.selectedRows = undefined;
-                $.data(target, 'kyTable', kyTableData);
+                kyDatagridData.selectedRows = undefined;
+                $.data(target, 'kyDatagrid', kyDatagridData);
                 options.onLoadSuccess(data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert(XMLHttpRequest.responseText + "   " + textStatus + "  kyTable ajax error");
+                alert(XMLHttpRequest.responseText + "   " + textStatus + "  kyDatagrid ajax error");
                 options.onLoadError();
             }
         });
@@ -251,7 +251,7 @@
 
     // 绑定事件
     function bindEvent(target) {
-        var options = $(target).kyTable('options');
+        var options = $(target).kyDatagrid('options');
         // 绑定表头排序事件
         $(target).find("th.sortable").click(function (event) {
             var order = "desc";
@@ -260,19 +260,19 @@
             if ($(this).hasClass("down")) {
                 order = "asc";
             }
-            var queryParam = $.data(target, "kyTable").options.queryParams;
+            var queryParam = $.data(target, "kyDatagrid").options.queryParams;
             queryParam.sort = field;
             queryParam.order = order;
             reload(target, queryParam);
             event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行单击事件
-        $(target).find(".kyTable-row").click(function (event) {
+        $(target).find(".kyDatagrid-row").click(function (event) {
             // 表示空行,不进行任何操作
             if ($(this).hasClass("empty-row")) {
                 return;
             }
-            var rows = $.data(target, "kyTable").rows;
+            var rows = $.data(target, "kyDatagrid").rows;
             var index = $(this).attr("index");
 
             if (!$(this).hasClass("selected")) {
@@ -283,15 +283,15 @@
             event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行双击事件
-        $(target).find(".kyTable-row").dblclick(function (event) {
-            var rows = $.data(target, "kyTable").rows;
+        $(target).find(".kyDatagrid-row").dblclick(function (event) {
+            var rows = $.data(target, "kyDatagrid").rows;
             var index = $(this).attr("index");
-            $.data(target, "kyTable").options.onDblClickRow(index, rows[index]);
+            $.data(target, "kyDatagrid").options.onDblClickRow(index, rows[index]);
             event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定 全选/取消全选 事件
         if (options.enableChecked) {
-            $(target).find("#kyTableAllCheckbox").on("click", function () {
+            $(target).find("#kyDatagridAllCheckbox").on("click", function () {
                 if (!$(this).prop("checked")) {
                     unCheckAll(target);
                 } else {
@@ -308,21 +308,21 @@
     // 选中指定行
     function checkRow(target, index) {
         // 首先更新选中状态
-        var row = $(target).find("#kyTable-row-" + index);
+        var row = $(target).find("#kyDatagrid-row-" + index);
         // 表示已经选中，不做任何操作
         if (row.hasClass("selected")) {
             return;
         }
         row.addClass("selected");
 
-        var kyTableData = $.data(target, 'kyTable');
-        var rows = kyTableData.rows == undefined ? [] : kyTableData.rows;
-        var selectedRows = kyTableData.selectedRows == undefined ? [] : kyTableData.selectedRows;
-        var options = kyTableData.options;
+        var kyDatagridData = $.data(target, 'kyDatagrid');
+        var rows = kyDatagridData.rows == undefined ? [] : kyDatagridData.rows;
+        var selectedRows = kyDatagridData.selectedRows == undefined ? [] : kyDatagridData.selectedRows;
+        var options = kyDatagridData.options;
 
         // 只有启用了复选框功能该方法才生效
         if (options.enableChecked) {
-            row.find(".kyTableCheckbox").prop("checked", true);
+            row.find(".kyDatagridCheckbox").prop("checked", true);
 
             var idField = options.idField;
             var isExist = false;
@@ -333,42 +333,42 @@
             }
             if (!isExist) {
                 selectedRows.push(rows[index]);
-                kyTableData.selectedRows = selectedRows;
+                kyDatagridData.selectedRows = selectedRows;
             }
             // 更新选中行数据
-            $.data(target, 'kyTable', kyTableData);
+            $.data(target, 'kyDatagrid', kyDatagridData);
         }
 
         // 全选时设置表格的 全选 框为选中
         var isAllChecked = true;
         for (var i = 0; i < rows.length; i++) {
-            if (!$("#kyTable-row-" + i).find(".kyTableCheckbox").prop("checked")) {
+            if (!$("#kyDatagrid-row-" + i).find(".kyDatagridCheckbox").prop("checked")) {
                 isAllChecked = false;
             }
         }
         if (isAllChecked) {
-            $(target).find("#kyTableAllCheckbox").prop("checked", true);
+            $(target).find("#kyDatagridAllCheckbox").prop("checked", true);
         }
     }
 
     // 取消选中指定行
     function unCheckRow(target, index) {
         // 首先更新选中状态
-        var row = $(target).find("#kyTable-row-" + index);
+        var row = $(target).find("#kyDatagrid-row-" + index);
         // 表示没有被选中，不做任何操作
         if (!row.hasClass("selected")) {
             return;
         }
         row.removeClass("selected");
 
-        var kyTableData = $.data(target, 'kyTable');
-        var rows = kyTableData.rows == undefined ? [] : kyTableData.rows;
-        var selectedRows = kyTableData.selectedRows == undefined ? [] : kyTableData.selectedRows;
-        var options = kyTableData.options;
+        var kyDatagridData = $.data(target, 'kyDatagrid');
+        var rows = kyDatagridData.rows == undefined ? [] : kyDatagridData.rows;
+        var selectedRows = kyDatagridData.selectedRows == undefined ? [] : kyDatagridData.selectedRows;
+        var options = kyDatagridData.options;
 
         // 只有启用了复选框功能该方法才生效
         if (options.enableChecked) {
-            row.find(".kyTableCheckbox").prop("checked", false);
+            row.find(".kyDatagridCheckbox").prop("checked", false);
 
             var idField = options.idField;
             for (var i = 0;
@@ -380,15 +380,15 @@
                 }
             }
             // 更新选中行数据
-            $.data(target, 'kyTable', kyTableData);
+            $.data(target, 'kyDatagrid', kyDatagridData);
         }
         // 设置表格的 全选 框为没有选中
-        $(target).find("#kyTableAllCheckbox").prop("checked", false);
+        $(target).find("#kyDatagridAllCheckbox").prop("checked", false);
     }
 
     // 全选所有行
     function checkAll(target) {
-        var rows = $.data(target, "kyTable").rows == undefined ? [] : $.data(target, "kyTable").rows;
+        var rows = $.data(target, "kyDatagrid").rows == undefined ? [] : $.data(target, "kyDatagrid").rows;
         for (var i = 0;
              i < rows.length;
              i++) {
@@ -398,7 +398,7 @@
 
     // 取消全选所有行
     function unCheckAll(target) {
-        var rows = $.data(target, "kyTable").rows == undefined ? [] : $.data(target, "kyTable").rows;
+        var rows = $.data(target, "kyDatagrid").rows == undefined ? [] : $.data(target, "kyDatagrid").rows;
         for (var i = 0;
              i < rows.length;
              i++) {
@@ -413,7 +413,7 @@
         // 选中行数不为 0 时获取第一行的 index 并返回该行数据
         if (selectedRows.length > 0) {
             // 获取全部行数据
-            var rows = $.data(target, "kyTable").rows;
+            var rows = $.data(target, "kyDatagrid").rows;
             var firstIndex = parseInt($(selectedRows[0]).attr("index"));
             return rows[firstIndex];
         }
