@@ -1,5 +1,5 @@
 /**
- * Kingyea Table (v1.0)
+ * Kingyea Datagrid (v1.0)
  * 金越自定义表格插件，根据 easyui 的 datagrid 进行设计
  * 通过 artTemplate 模板生成表格,修改 样式/结构 需要修改 tableTemplate.jsp 模板页
  * @author: Mushi(hu_mushi@163.com) 2017年5月16日
