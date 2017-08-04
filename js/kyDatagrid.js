@@ -60,6 +60,8 @@
         onLoadError: function () {
         },
         onDblClickRow: function (index, row) {
+        },
+        onSelect: function (index, row) {
         }
     };
 
@@ -352,6 +354,7 @@
         if (isAllChecked) {
             $(target).find("#kyDatagridAllCheckbox").prop("checked", true);
         }
+        options.onSelect(index, row);
     }
 
     // 取消选中指定行
