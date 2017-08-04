@@ -51,6 +51,7 @@
         rownumbers: true,                 // 显示行号
         pagination: true,                 // 是否分页
         pageNumber: 1,
+        singleSelect: true,
         pageSize: 10,
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
@@ -148,9 +149,7 @@
         // 分页页码数组
         var pageScope = [];
         var len = begin + maxPageLen;
-        for (begin;
-             begin < len;
-             begin++) {
+        for (begin; begin < len; begin++) {
             pageScope.push(begin);
         }
 
@@ -275,7 +274,11 @@
             var rows = $.data(target, "kyDatagrid").rows;
             var index = $(this).attr("index");
 
-            if (!$(this).hasClass("selected")) {
+            if (options.singleSelect) {
+                unCheckAll(target, index);
+                checkRow(target, index);
+            }
+            else if (!$(this).hasClass("selected")) {
                 checkRow(target, index);
             } else {
                 unCheckRow(target, index);
