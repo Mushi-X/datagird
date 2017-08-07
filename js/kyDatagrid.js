@@ -84,7 +84,17 @@
             return getSelected(jq[0]);
         },
         getSelections: function (jq) {
-            return $.data(jq[0], "kyDatagrid").selectedRows == undefined ? [] : $.data(jq[0], "kyDatagrid").selectedRows;
+            return $.data(jq[0], "kyDatagrid").selectedRows || [];
+        },
+        checkRow: function (jq, index) {
+            return jq.each(function () {
+                checkRow(this, index);
+            })
+        },
+        checkAll: function (jq) {
+            return jq.each(function () {
+                checkAll(this);
+            })
         }
     };
 
@@ -218,6 +228,9 @@
             data: queryParams,
             dataType: 'json',
             success: function (data) {
+
+                data = formatResult(options, data);
+
                 removeTable(target);
                 // 创建表格
                 createTable(target, data.rows, options);
@@ -312,7 +325,7 @@
 
     // 选中指定行
     function checkRow(target, index) {
-        // 首先更新选中状态
+        // region // 更新选中状态
         var row = $(target).find("#kyDatagrid-row-" + index);
         // 表示已经选中，不做任何操作
         if (row.hasClass("selected")) {
@@ -321,11 +334,12 @@
         row.addClass("selected");
 
         var kyDatagridData = $.data(target, 'kyDatagrid');
-        var rows = kyDatagridData.rows == undefined ? [] : kyDatagridData.rows;
-        var selectedRows = kyDatagridData.selectedRows == undefined ? [] : kyDatagridData.selectedRows;
+        var rows = kyDatagridData.rows == undefined || [];
+        var selectedRows = kyDatagridData.selectedRows || [];
         var options = kyDatagridData.options;
+        // endregion
 
-        // 只有启用了复选框功能该方法才生效
+        // region // 只有启用了复选框功能该方法才生效
         if (options.enableChecked) {
             row.find(".kyDatagridCheckbox").prop("checked", true);
 
@@ -343,8 +357,9 @@
             // 更新选中行数据
             $.data(target, 'kyDatagrid', kyDatagridData);
         }
+        // endregion
 
-        // 全选时设置表格的 全选 框为选中
+        // region // 全选时设置表格的 全选 框为选中
         var isAllChecked = true;
         for (var i = 0; i < rows.length; i++) {
             if (!$("#kyDatagrid-row-" + i).find(".kyDatagridCheckbox").prop("checked")) {
@@ -354,7 +369,8 @@
         if (isAllChecked) {
             $(target).find("#kyDatagridAllCheckbox").prop("checked", true);
         }
-        options.onSelect(index, row);
+        // endregion
+        options.onSelect(index, rows[index]);
     }
 
     // 取消选中指定行
@@ -424,6 +440,34 @@
             return rows[firstIndex];
         }
         return null;
+    }
+
+    // 格式化返回的数据结果
+    function formatResult(options, data) {
+        // 返回类型为数组时，格式化成标准的 JSON 格式
+        if (data instanceof Array) {
+
+            // 获取分页配置信息
+            var pageSize = options.pageSize;
+            var pageNo = options.pageNumber;
+            var realData = [];
+            // 遍历获取真实显示的记录
+            for (var i = 0, start = (pageNo - 1) * pageSize; i < pageSize; i++) {
+                // 超过实际数据长度时直接结束遍历
+                if (start + i >= data.length) {
+                    break;
+                }
+                realData.push(data[start + i]);
+            }
+
+            return {total: data.length, rows: realData};
+        }
+        // 返回格式为 JSON 时，直接返回
+        else if (data instanceof Object) {
+            return data;
+        }
+        // 其他的情况弹窗提示不支持
+        alert("unsupport data type.you should use Array or JSON data to create a table");
     }
 
 })(jQuery);
