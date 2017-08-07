@@ -89,12 +89,12 @@
         checkRow: function (jq, index) {
             return jq.each(function () {
                 checkRow(this, index);
-            })
+            });
         },
         checkAll: function (jq) {
             return jq.each(function () {
                 checkAll(this);
-            })
+            });
         }
     };
 
@@ -334,7 +334,7 @@
         row.addClass("selected");
 
         var kyDatagridData = $.data(target, 'kyDatagrid');
-        var rows = kyDatagridData.rows == undefined || [];
+        var rows = kyDatagridData.rows || [];
         var selectedRows = kyDatagridData.selectedRows || [];
         var options = kyDatagridData.options;
         // endregion
@@ -460,6 +460,7 @@
                 realData.push(data[start + i]);
             }
 
+            console.log({total: data.length, rows: realData});
             return {total: data.length, rows: realData};
         }
         // 返回格式为 JSON 时，直接返回
