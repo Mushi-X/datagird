@@ -95,6 +95,16 @@
             return jq.each(function () {
                 checkAll(this);
             });
+        },
+        unCheckRow: function (jq, index) {
+            return jq.each(function () {
+                unCheckRow(this, index);
+            });
+        },
+        unCheckAll: function (jq) {
+            return jq.each(function () {
+                unCheckAll(this);
+            });
         }
     };
 
@@ -105,6 +115,12 @@
 
     // 创建表格
     function createTable(target, rows, options) {
+
+        //
+        if (options.pagination && rows.length > options.pageSize) {
+            rows = rows.slice(0, options.pageSize);
+        }
+
         var emptyRows = [];
         var emptyLen = options.pageSize - rows.length
         while (emptyLen-- > 0) {
@@ -125,6 +141,7 @@
         var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options, totalWidth: totalWidth});
         $(target).html(html);
         $(target).addClass("data-table marb-10 kyDatagrid");
+        var selectedRows = $.data(target, 'kyDatagrid').selectedRows || [];
     }
 
     // 创建分页
@@ -197,7 +214,12 @@
             else {
                 var options = $(target).kyDatagrid('options');
                 options.pageNumber = pageno;
-                $.data(target, 'kyDatagrid', {options: options});
+                // 获取表格配置及参数
+                var kyDatagridData = $.data(target, 'kyDatagrid');
+                // 更新表格配置
+                kyDatagridData.options = options;
+                // 更新存放的 data
+                $.data(target, 'kyDatagrid', kyDatagridData);
                 $(target).kyDatagrid('reload');
             }
         })
@@ -246,7 +268,7 @@
                 kyDatagridData.options = options;
                 kyDatagridData.rows = data.rows;
                 // 这里清空已经选择过的行记录
-                kyDatagridData.selectedRows = undefined;
+                // kyDatagridData.selectedRows = undefined;
                 $.data(target, 'kyDatagrid', kyDatagridData);
                 options.onLoadSuccess(data);
             },
@@ -290,10 +312,13 @@
             var index = $(this).attr("index");
 
             if (options.singleSelect) {
-                unCheckAll(target, index);
-                checkRow(target, index);
-            }
-            else if (!$(this).hasClass("selected")) {
+                if (isChecked(target, index)) {
+                    unCheckAll(target);
+                } else {
+                    unCheckAll(target);
+                    checkRow(target, index);
+                }
+            } else if (!$(this).hasClass("selected")) {
                 checkRow(target, index);
             } else {
                 unCheckRow(target, index);
@@ -310,10 +335,15 @@
         // 绑定 全选/取消全选 事件
         if (options.enableChecked) {
             $(target).find("#kyDatagridAllCheckbox").on("click", function () {
-                if (!$(this).prop("checked")) {
-                    unCheckAll(target);
+                // 单选时禁止全选按钮事件
+                if (options.singleSelect) {
+                    $(this).prop('checked', false);
                 } else {
-                    checkAll(target);
+                    if (!$(this).prop("checked")) {
+                        unCheckAll(target);
+                    } else {
+                        checkAll(target);
+                    }
                 }
             });
         }
@@ -321,6 +351,16 @@
         $(target).find("a,button").click(function (event) {
             event.stopPropagation();    //  阻止事件冒泡
         });
+    }
+
+    // 判断行是否被选中
+    function isChecked(target, index) {
+        var row = $(target).find("#kyDatagrid-row-" + index);
+        // 表示已经选中，不做任何操作
+        if (row.hasClass("selected")) {
+            return true;
+        }
+        return false;
     }
 
     // 选中指定行
@@ -451,16 +491,18 @@
             var pageSize = options.pageSize;
             var pageNo = options.pageNumber;
             var realData = [];
-            // 遍历获取真实显示的记录
-            for (var i = 0, start = (pageNo - 1) * pageSize; i < pageSize; i++) {
-                // 超过实际数据长度时直接结束遍历
-                if (start + i >= data.length) {
-                    break;
+            if (options.pagination) {
+                // 遍历获取真实显示的记录
+                for (var i = 0, start = (pageNo - 1) * pageSize; i < pageSize; i++) {
+                    // 超过实际数据长度时直接结束遍历
+                    if (start + i >= data.length) {
+                        break;
+                    }
+                    realData.push(data[start + i]);
                 }
-                realData.push(data[start + i]);
+            } else {
+                realData = data;
             }
-
-            console.log({total: data.length, rows: realData});
             return {total: data.length, rows: realData};
         }
         // 返回格式为 JSON 时，直接返回
