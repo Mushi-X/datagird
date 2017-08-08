@@ -55,6 +55,7 @@
         pageSize: 10,
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
+        errorMsg: '记录为空!',
         onLoadSuccess: function (rows) {
         },
         onLoadError: function () {
@@ -128,7 +129,7 @@
         }
 
         var emptyRows = [];
-        var emptyLen = options.pageSize - rows.length
+        var emptyLen = options.pageSize - rows.length;
         while (emptyLen-- > 0) {
             emptyRows.push("");
         }
@@ -143,6 +144,7 @@
                 totalWidth += width;
             }
         }
+
         // 根据模板生成HTML
         var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options, totalWidth: totalWidth});
         $(target).html(html);
@@ -233,6 +235,7 @@
 
     // 更新表格
     function reload(target, params) {
+        showLoading();
         // 获取表格基本配置
         var options = $.data(target, 'kyDatagrid').options;
 
@@ -246,6 +249,7 @@
         if (options.pagination) {
             $.extend(queryParams, {page: options.pageNumber, rows: options.pageSize});
         }
+
 
         // ajax加载数据
         // 返回结果 json 格式为 {total:0,rows:[]}
@@ -277,9 +281,14 @@
                 // kyDatagridData.selectedRows = undefined;
                 $.data(target, 'kyDatagrid', kyDatagridData);
                 options.onLoadSuccess(data);
+
+                removeLoading();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert(XMLHttpRequest.responseText + "   " + textStatus + "  kyDatagrid ajax error");
+                createTable(target, [], options);
+                if (options.pagination) {
+                    createPagination(target, 0, options);
+                }
                 options.onLoadError();
             }
         });
@@ -528,6 +537,14 @@
         else {
             alert("unsupport data type.you should use Array or JSON data to create a table");
         }
+    }
+
+    function showLoading(){
+
+    }
+
+    function removeLoading(){
+
     }
 
 })(jQuery);

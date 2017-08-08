@@ -1,4 +1,3 @@
-
 <!-- kyDatagrid 表格模板 -->
 <script id="kyDatagrid" type="text/html">
     <!-- 表头 -->
@@ -18,6 +17,11 @@
         {{/each}}
     </tr>
     <!-- 表格主体 -->
+    {{if rows.length <= 0}}
+    <tr>
+        {{options.errorMsg | outputEmptyMsg:options}}
+    </tr>
+    {{else}}
     {{each rows as row index}}
     <tr id="kyDatagrid-row-{{index}}" class="kyDatagrid-row" index="{{index}}">
         <!-- 是否显示行号 -->
@@ -44,9 +48,6 @@
     {{each emptyRows as emptyRow index}}
     <tr class="kyDatagrid-row empty-row">
         {{if options.rownumbers}}
-        <!--
-        <td class="center">{{(options.pageNumber - 1 ) * options.pageSize + rows.length + index + 1}}</td>
-        -->
         <td></td>
         {{/if}}
         <!-- 是否可以复选 -->
@@ -56,6 +57,7 @@
         {{options.pageSize | outputEmptyRow:options}}
     </tr>
     {{/each}}
+    {{/if}}
 </script>
 
 <!-- kyDatagrid 表格分页模板 -->
@@ -155,14 +157,25 @@
     template.helper('outputEmptyRow', function (pageSize, options) {
         var tr = "";
         var columns = options.columns;
-        for (var i = 0;
-             i < columns.length;
-             i++) {
+        for (var i = 0; i < columns.length; i++) {
             var col = columns[i];
             if (!col.hidden) {
                 tr += "<td></td>";
             }
         }
         return tr;
+    });
+
+    // 格式化输出返回信息为空时的提示，以及服务器异常时的信息
+    template.helper('outputEmptyMsg', function (errorMsg, options) {
+        var td = $("<td>");
+        var columnsLen = options.columns.length;
+        if (options.enableChecked) {
+            columnsLen++;
+        }
+        td.attr("colspan", columnsLen);
+        td.attr("align", "center");
+        td.html(options.errorMsg);
+        return td[0].outerHTML;
     });
 </script>
