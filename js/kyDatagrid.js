@@ -62,6 +62,12 @@
         onDblClickRow: function (index, row) {
         },
         onSelect: function (index, row) {
+        },
+        onUnSelect: function (index, row) {
+        },
+        onSelectAll: function (rows) {
+        },
+        onUnSelectAll: function (rows) {
         }
     };
 
@@ -408,6 +414,7 @@
         }
         if (isAllChecked) {
             $(target).find("#kyDatagridAllCheckbox").prop("checked", true);
+            options.onSelectAll(rows);
         }
         // endregion
         options.onSelect(index, rows[index]);
@@ -433,9 +440,7 @@
             row.find(".kyDatagridCheckbox").prop("checked", false);
 
             var idField = options.idField;
-            for (var i = 0;
-                 i < selectedRows.length;
-                 i++) {
+            for (var i = 0; i < selectedRows.length; i++) {
                 if (selectedRows[i][idField] == rows[index][idField]) {
                     // 删除该记录
                     selectedRows.splice(i, 1);
@@ -443,9 +448,11 @@
             }
             // 更新选中行数据
             $.data(target, 'kyDatagrid', kyDatagridData);
+            // 设置表格的 全选 框为没有选中
+            $(target).find("#kyDatagridAllCheckbox").prop("checked", false);
         }
-        // 设置表格的 全选 框为没有选中
-        $(target).find("#kyDatagridAllCheckbox").prop("checked", false);
+
+        options.onUnSelect(index, rows[index]);
     }
 
     // 全选所有行
@@ -482,15 +489,15 @@
         return null;
     }
 
-    // 格式化返回的数据结果
+    // 格式化返回的数据结果，标准格式为{total:100,rows:[]}
+    // 只返回数组格式时需要转换成标准格式  []  ->  {rows:[],total:array.length}
     function formatResult(options, data) {
+        // 获取分页配置信息
+        var pageSize = options.pageSize;
+        var pageNo = options.pageNumber;
+        var realData = [];
         // 返回类型为数组时，格式化成标准的 JSON 格式
         if (data instanceof Array) {
-
-            // 获取分页配置信息
-            var pageSize = options.pageSize;
-            var pageNo = options.pageNumber;
-            var realData = [];
             if (options.pagination) {
                 // 遍历获取真实显示的记录
                 for (var i = 0, start = (pageNo - 1) * pageSize; i < pageSize; i++) {
@@ -507,10 +514,20 @@
         }
         // 返回格式为 JSON 时，直接返回
         else if (data instanceof Object) {
+            var rows = data.rows;
+            if (options.pagination && rows.length > pageSize) {
+                // 遍历获取真实显示的记录
+                for (var i = 0; i < pageSize; i++) {
+                    realData.push(rows[i]);
+                }
+                data.rows = realData;
+            }
             return data;
         }
         // 其他的情况弹窗提示不支持
-        alert("unsupport data type.you should use Array or JSON data to create a table");
+        else {
+            alert("unsupport data type.you should use Array or JSON data to create a table");
+        }
     }
 
 })(jQuery);

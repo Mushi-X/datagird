@@ -51,7 +51,7 @@ div.dataTables_filter label input{ border-radius: 2px; border:1px solid #e4eaec;
 .data-table th{ border:1px solid #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; height: 36px; text-align: left; padding-left: 6px; }
 .data-table th.up{ background: url("img/ico-up.gif") no-repeat right center; }
 .data-table th.down{ background: url("img/ico-down.gif") no-repeat right center;}
-.data-table td{ border:1px solid #e4eaec; height: 36px; font-size: 14px; padding-left: 6px;}
+.data-table td{ border:1px solid #e4eaec; height: 36px; font-size: 14px; padding-left: 6px; vertical-align: middle;}
 .data-table tr.selected,.data-table tr.selected:hover{background: #ffe48d;}
 .data-table tr:nth-child(odd){background:#fbfdfd;}
 .data-table tr:nth-child(odd).selected,.data-table tr:nth-child(odd).selected:hover{background: #ffe48d;}
