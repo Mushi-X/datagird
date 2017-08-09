@@ -19,7 +19,7 @@
     <!-- 表格主体 -->
     {{if rows.length <= 0}}
     <tr>
-        {{options.errorMsg | outputEmptyMsg:options}}
+        {{options.emptyMsg | outputEmptyMsg:options}}
     </tr>
     {{else}}
     {{each rows as row index}}
@@ -167,15 +167,18 @@
     });
 
     // 格式化输出返回信息为空时的提示，以及服务器异常时的信息
-    template.helper('outputEmptyMsg', function (errorMsg, options) {
+    template.helper('outputEmptyMsg', function (emptyMsg, options) {
         var td = $("<td>");
         var columnsLen = options.columns.length;
         if (options.enableChecked) {
             columnsLen++;
         }
+        if (options.rownumbers) {
+            columnsLen++;
+        }
         td.attr("colspan", columnsLen);
         td.attr("align", "center");
-        td.html(options.errorMsg);
+        td.html(options.emptyMsg);
         return td[0].outerHTML;
     });
 </script>

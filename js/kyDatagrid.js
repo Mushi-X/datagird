@@ -55,7 +55,7 @@
         pageSize: 10,
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
-        errorMsg: '记录为空!',
+        emptyMsg: '记录为空!',
         onLoadSuccess: function (rows) {
         },
         onLoadError: function () {
