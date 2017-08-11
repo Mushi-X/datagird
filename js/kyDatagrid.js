@@ -20,8 +20,6 @@
         // 不为 string 时初始化表格
         options = options || {};
         return this.each(function () {
-
-            var target = this;
             // jQuery.data( element )
             // jQuery.data( element, key )
             // jQuery.data( element, key, value )

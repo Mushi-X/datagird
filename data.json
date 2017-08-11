@@ -1,0 +1,56 @@
+{
+  "total": 151,
+  "rows": [
+    {
+      "id": "1",
+      "name": "Apple Watch",
+      "status": 1,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 36,
+      "price": "$3.99",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 36,
+      "sell": 5,
+      "left": "30+"
+    },
+    {
+      "id": "2",
+      "name": "IPhone 7 Plus",
+      "status": 1,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 108,
+      "price": "$799.00",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 108,
+      "sell": 97,
+      "left": 11
+    },
+    {
+      "id": "3",
+      "name": "Macbook Air",
+      "status": 1,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 1036,
+      "price": "$1799.00",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 1036,
+      "sell": 123,
+      "left": "900+"
+    }
+  ]
+}
