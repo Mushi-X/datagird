@@ -1,6 +1,7 @@
 <!-- kyDatagrid 表格模板 -->
 <script id="kyDatagrid" type="text/html">
     <!-- 表头 -->
+    {{totalWidth | outputTitleV2:options}}
     <tr id="kyDatagrid-header">
         <!-- 是否显示行号 -->
         {{if options.rownumbers}}
@@ -177,7 +178,7 @@
             columnsLen++;
         }
         td.attr("colspan", columnsLen);
-        td.attr("align", "center");
+        td.css("text-align", "center");
         td.html(options.emptyMsg);
         return td[0].outerHTML;
     });

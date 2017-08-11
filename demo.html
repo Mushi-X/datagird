@@ -23,14 +23,13 @@
     <tr>
         <th rowspan="2" width="33%">col one</th>
         <th rowspan="2" width="33%">col two</th>
-        <th colspan="3" width="33%" align="center">col three</th>
+        <th colspan="3" width="33%" style="text-align: center">col three</th>
     </tr>
     <tr>
-        <th width="5%">one</th>
-        <th width="21%">inner two long</th>
-        <th width="5%">inner three</th>
+        <th width="11%">one</th>
+        <th width="11%">inner two long</th>
+        <th width="11%">inner three</th>
     </tr>
-
     <tr>
         <td>1</td>
         <td>2</td>
@@ -47,21 +46,8 @@
 <!-- kyDatagrid 表格模板 -->
 <script id="kyDatagrid" type="text/html">
     <!-- 表头 -->
-    <tr id="kyDatagrid-header">
-        <!-- 是否显示行号 -->
-        {{if options.rownumbers}}
-        <th style="min-width:36px;max-width:36px;"></th>
-        {{/if}}
-        <!-- 是否可以复选 -->
-        {{if options.enableChecked}}
-        <th style="min-width:36px;max-width:36px;text-align: center;">
-            <input type="checkbox" id="kyDatagridAllCheckbox"/>
-        </th>
-        {{/if}}
-        {{each options.columns as col index}}
-        {{col.title | outputTitle:col,totalWidth,options.queryParams}}
-        {{/each}}
-    </tr>
+    {{"" | outputTitleUpdate: options,totalWidth}}
+
     <!-- 表格主体 -->
     {{if rows.length <= 0}}
     <tr>
@@ -91,6 +77,7 @@
     </tr>
     {{/each}}
     <!-- 空行遍历 -->
+
     {{each emptyRows as emptyRow index}}
     <tr class="kyDatagrid-row empty-row">
         {{if options.rownumbers}}
@@ -212,9 +199,10 @@
         return tr;
     });
 
+    // 空数据时输出
     template.helper('outputEmptyMsg', function (emptyMsg, options) {
         var td = $("<td>");
-        var columnsLen = options.columns.length;
+        var columnsLen = getRealColumns(options.columns).length;
         if (options.enableChecked) {
             columnsLen++;
         }
@@ -226,6 +214,184 @@
         td.html(options.emptyMsg);
         return td[0].outerHTML;
     });
+
+    template.helper('outputTitleUpdate', function (value, options, totalWidth) {
+        var length = getMaxDeepLength(options.columns);
+        // 获取当前表格的宽度
+        var totalWidth = getTotalWidth(getRealColumns(options.columns));
+        var queryParams = options.queryParams;
+        var rows = new Array(length);
+        for (var i = 0; i < length; i++) {
+            rows[i] = [];
+        }
+        // 获取解析后的表头行配置
+        rows = resolveHeader(options.columns, rows);
+        var thead = $("<thead>");
+        // 遍历输出表头行
+        for (var i = 0; i < rows.length; i++) {
+            var tr = $("<tr>");
+            // 第一行需要初始化 行号列单元格 和 全选框单元格
+            if (i == 0) {
+                // 添加行号列单元格
+                if (options.rownumbers) {
+                    var rowNumTh = $("<th>");
+                    rowNumTh.css({"min-width": "36px", "max-width": "36px"})
+                            .attr("rowspan", rows.length);
+                    tr.append(rowNumTh);
+                }
+                // 添加全选框单元格
+                if (options.enableChecked) {
+                    var checkBoxTh = $("<th>");
+                    checkBoxTh.css({"min-width": "36px", "max-width": "36px", "text-align": "center"})
+                            .attr("rowspan", rows.length)
+                            .append("<input type='checkbox' id='kyDatagridAllCheckbox'>");
+                    tr.append(checkBoxTh);
+                }
+            }
+
+            // 获取每行配置
+            var row = rows[i];
+            // 遍历当前行，输出每个单元格
+            for (var j = 0; j < row.length; j++) {
+                var column = row[j];
+                var th = $("<th>");
+                th.attr("field", column.field);
+                th.html(column.title);
+                // 列是否可排序
+                if (column.sortable == true) {
+                    th.addClass("sortable");
+                    if (column.field == queryParams.sort && queryParams.order == "desc") {
+                        th.addClass("down");
+                    }
+                    else if (column.field == queryParams.sort && queryParams.order == "asc") {
+                        th.addClass("up");
+                    }
+                }
+                // 列是否隐藏
+                if (column.hidden == true) {
+                    th.css("display", "none");
+                }
+
+                if (column.childColumns == undefined || column.childColumns.length <= 0) {
+                    th.attr("rowspan", length - i);
+                    // 下方没有元素时可以 设置对齐方式
+                    var titleAlign = column.titleAlign || column.align;
+                    switch (titleAlign) {
+                        case 'left':
+                            th.css("text-align", "left");
+                            break;
+                        case 'center':
+                            th.css("text-align", "center");
+                            break;
+                        case 'right':
+                            th.css("text-align", "right");
+                            break;
+                        default:
+                            th.css("text-align", "left");
+                            break;
+                    }
+                    // 下方没有元素时可以 设置宽度自适应
+                    var columnWidth = column.width == undefined ? 100 : column.width;
+                    th.css("width", columnWidth / totalWidth * 100 + "%");
+                } else {
+                    th.css("text-align", "center");
+                    th.attr("colspan", getColspan(column.childColumns));
+                }
+                tr.append(th);
+            }
+
+            thead.append(tr);
+        }
+        return thead[0].outerHTML;
+    });
+
+    // 递归获取columns的最深层数
+    function getMaxDeepLength(columns, length) {
+        length = length || 0;
+        // 调用默认增加一层深度，初始从 0 开始
+        var maxLength = ++length;
+
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头且长度不小于 0 时进行递归
+            if (column.childColumns && column.childColumns.length > 0) {
+                // 获取该列的深度。
+                var theLength = getMaxDeepLength(column.childColumns, length);
+                // 判断是否比当前最大深度大
+                if (theLength > maxLength) {
+                    maxLength = theLength;
+                }
+            }
+        }
+        return maxLength;
+    }
+
+    // 解析表头，将一层数组转换成多层数组
+    function resolveHeader(columns, rows, length) {
+        // 初始为 -1 ，因为数组下标从 0 开始，方便使用
+        length = length || 0;
+
+        // 调用默认增加一层深度，初始从 -1 开始
+        var curLength = ++length;
+
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            rows[length - 1].push(column);
+
+            if (column.childColumns && column.childColumns.length > 0) {
+                rows = resolveHeader(column.childColumns, rows, curLength);
+            }
+        }
+        return rows;
+    }
+
+    // 获取当前表头跨列数量
+    function getColspan(columns, length) {
+        length = length || 0;
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头时不需要计算当前数量
+            if (column.childColumns && column.childColumns.length > 0) {
+                length = getColspan(column.childColumns, length);
+            } else {
+                length++;
+            }
+        }
+
+        return length;
+
+    }
+
+    // 计算表格总宽度
+    function getTotalWidth(columns) {
+        var totalWidth = 0;
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            if (!column.hidden) {
+                var width = column.width == undefined ? 100 : column.width;
+                totalWidth += width;
+            }
+        }
+    }
+
+    // 获取表格实际显示时的列对象
+    function getRealColumns(columns, realColumns) {
+        var realColumns = realColumns || [];
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头且长度不小于 0 时进行递归
+            if (column.childColumns && column.childColumns.length > 0) {
+                realColumns = getRealColumns(column.childColumns, realColumns);
+            }
+            // 没有子表头时表示是最下面一行，直接放入 realColumns
+            else {
+                if (!column.hidden) {
+                    realColumns.push(column);
+                }
+            }
+        }
+        return realColumns;
+    }
 </script>
 <script type="text/javascript">
     $(function () {
@@ -238,11 +404,11 @@
             pagination: true,
             singleSelect: false,
             rownumbers: true,
-            enableChecked: false,
+            enableChecked: true,
             pageNumber: 1,
+            emptyMsg: '这里没有数据！',
             pageSize: 15,
             columns: [
-                {field: 'id', title: 'id', hidden: true},
                 {field: 'name', title: '名称', width: 100, sortable: true},
                 {
                     field: 'status', title: '状态', width: 100, align: 'center', titleAlign: 'left',
@@ -254,7 +420,39 @@
                             case "2" :
                                 return "状态为二";
                                 break;
-
+                        }
+                    }
+                },
+                {
+                    field: 'combo', title: '复杂表头', width: 100,
+                    childColumns: [
+                        {
+                            field: 'childCol1', title: '子表头一', width: 100,
+                            childColumns: [
+                                {field: 'thirdChildCol1', title: '三级子表头一', width: 100},
+                                {field: 'thirdChildCol2', title: '三级子表头二', width: 100},
+                                {field: 'thirdChildCol3', title: '三级子表头三', width: 100},
+                            ]
+                        },
+                        {field: 'childCol2', title: '子表头二', width: 100},
+                        {field: 'childCol3', title: '子表头三', width: 100}
+                    ]
+                },
+                {
+                    field: 'combo', title: '重复复杂表头', width: 100,
+                    childColumns: [
+                        {field: 'childCol1', title: '子表头四', width: 100},
+                        {field: 'childCol2', title: '子表头五', width: 100},
+                        {field: 'childCol3', title: '子表头六', width: 100}
+                    ]
+                },
+                {
+                    field: 'oper', title: '操作', width: 100,
+                    formatter: function (val, row, index) {
+                        if (index % 2 == 0) {
+                            return "<a class='btn-blue' href='javascript:void(0)' onclick='getSelections()'>按钮</a>"
+                        } else {
+                            return "<button class='btn-blue' href='javascript:void(0)'>按钮</button>"
                         }
                     }
                 }

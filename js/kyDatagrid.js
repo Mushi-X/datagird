@@ -20,6 +20,8 @@
         // 不为 string 时初始化表格
         options = options || {};
         return this.each(function () {
+
+            var target = this;
             // jQuery.data( element )
             // jQuery.data( element, key )
             // jQuery.data( element, key, value )
@@ -134,19 +136,8 @@
             emptyRows.push("");
         }
 
-        var totalWidth = 0;
-
-        // 计算总宽度
-        for (var i = 0; i < options.columns.length; i++) {
-            var column = options.columns[i];
-            if (!column.hidden) {
-                var width = column.width == undefined ? 100 : column.width;
-                totalWidth += width;
-            }
-        }
-
         // 根据模板生成HTML
-        var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options, totalWidth: totalWidth});
+        var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options});
         $(target).html(html);
         $(target).addClass("data-table marb-10 kyDatagrid");
         var selectedRows = $.data(target, 'kyDatagrid').selectedRows || [];
