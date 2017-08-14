@@ -697,6 +697,9 @@
                 else {
                     div.html(value);
                 }
+                if (column.hidden) {
+                    td.css("display", "none");
+                }
                 td.append(div);
 
                 switch (column.align) {
@@ -768,7 +771,9 @@
             // 有子表头时不需要计算当前数量
             if (column.childColumns && column.childColumns.length > 0) {
                 length = getColspan(column.childColumns, length);
-            } else {
+            }
+            // 列不隐藏时宽度+1
+            else if (column.hidden == undefined || !column.hidden) {
                 length++;
             }
         }
@@ -801,9 +806,7 @@
             }
             // 没有子表头时表示是最下面一行，直接放入 realColumns
             else {
-                if (!column.hidden) {
-                    realColumns.push(column);
-                }
+                realColumns.push(column);
             }
         }
         return realColumns;
