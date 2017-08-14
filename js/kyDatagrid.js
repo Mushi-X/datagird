@@ -318,7 +318,9 @@
 
     // 移除表格
     function removeTable(target) {
-        $(target).unwrap(".kyDatagrid-view").unwrap($("<div class='kyDatagrid-wrap'></div>"));
+        if ($(target).parents(".kyDatagrid-wrap").length > 0) {
+            $(target).unwrap().unwrap();
+        }
         $(target).html("");
         $(target).next(".pagination").remove();
     }
