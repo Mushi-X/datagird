@@ -43,7 +43,12 @@
             maxPageLen: 6,
             columns: [
                 {field: 'ID', title: 'ID', width: 100, hidden: true},
-                {field: 'name', title: '商品名称', width: 100, sortable: true},
+                {
+                    field: 'name', title: '商品名称', width: 100, sortable: true,
+                    formatter: function (val, row, index) {
+                        return "<a href='javascript:void(0)'>" + val + "</a>";
+                    }
+                },
                 {
                     field: 'status', title: '商品状态', width: 100, align: 'center', titleAlign: 'left',
                     formatter: function (val, row, index) {
@@ -63,26 +68,26 @@
                         {
                             field: 'info', title: '基本信息', width: 100,
                             childColumns: [
-                                {field: 'unit', title: '单位', width: 100},
+                                {field: 'unit', title: '单位', width: 100, align: 'center'},
                                 {field: 'num', title: '数量', width: 100, sortable: true},
                                 {field: 'price', title: '单价', width: 100, align: 'right', sortable: true}
                             ]
                         },
-                        {field: 'value1', title: '高级属性一', width: 100},
-                        {field: 'value2', title: '高级属性二', width: 100},
-                        {field: 'value3', title: '高级属性三', width: 100}
+                        {field: 'value1', title: '高级属性一', width: 100, sortable: true},
+                        {field: 'value2', title: '高级属性二', width: 100, sortable: true},
+                        {field: 'value3', title: '高级属性三', width: 100, sortable: true}
                     ]
                 },
                 {
                     field: 'stock', title: '库存信息', width: 100,
                     childColumns: [
-                        {field: 'total', title: '总数', width: 100, sortable: true},
-                        {field: 'sell', title: '已售', width: 100, sortable: true},
-                        {field: 'left', title: '剩余', width: 100, sortable: true}
+                        {field: 'total', title: '总数', width: 100, sortable: true, align: 'right'},
+                        {field: 'sell', title: '已售', width: 100, sortable: true, align: 'right'},
+                        {field: 'left', title: '剩余', width: 100, sortable: true, align: 'right'}
                     ]
                 },
                 {
-                    field: 'oper', title: '操作', width: 100,
+                    field: 'oper', title: '操作', width: 100, align: 'center',
                     formatter: function (val, row, index) {
                         if (index % 2 == 0) {
                             return "<a class='btn-blue' href='javascript:void(0)' onclick='getSelections()'>按钮</a>"
@@ -95,76 +100,7 @@
             onLoadSuccess: function () {
             },
             onDblClickRow: function (index, row) {
-            }
-        });
-        $("#demoTable2").kyDatagrid({
-            title: "办公设备",
-            method: "get",
-            url: 'data.json',
-            border: true,
-            idField: 'id',
-            pagination: true,
-            singleSelect: true,
-            rownumbers: true,
-            enableChecked: true,
-            pageNumber: 1,
-            emptyMsg: '这里没有数据！',
-            pageSize: 15,
-            maxPageLen: 6,
-            columns: [
-                {field: 'ID', title: 'ID', width: 100, hidden: true},
-                {field: 'name', title: '商品名称', width: 100, sortable: true},
-                {
-                    field: 'status', title: '商品状态', width: 100, align: 'center', titleAlign: 'left',
-                    formatter: function (val, row, index) {
-                        switch (val) {
-                            case 1 :
-                                return "上架";
-                                break;
-                            case 2 :
-                                return "缺货";
-                                break;
-                        }
-                    }
-                },
-                {
-                    field: 'productValue', title: '商品属性', width: 100,
-                    childColumns: [
-                        {
-                            field: 'info', title: '基本信息', width: 100,
-                            childColumns: [
-                                {field: 'unit', title: '单位', width: 100},
-                                {field: 'num', title: '数量', width: 100, sortable: true},
-                                {field: 'price', title: '单价', width: 100, align: 'right', sortable: true}
-                            ]
-                        },
-                        {field: 'value1', title: '高级属性一', width: 100},
-                        {field: 'value2', title: '高级属性二', width: 100},
-                        {field: 'value3', title: '高级属性三', width: 100}
-                    ]
-                },
-                {
-                    field: 'stock', title: '库存信息', width: 100,
-                    childColumns: [
-                        {field: 'total', title: '总数', width: 100, sortable: true},
-                        {field: 'sell', title: '已售', width: 100, sortable: true},
-                        {field: 'left', title: '剩余', width: 100, sortable: true}
-                    ]
-                },
-                {
-                    field: 'oper', title: '操作', width: 100,
-                    formatter: function (val, row, index) {
-                        if (index % 2 == 0) {
-                            return "<a class='btn-blue' href='javascript:void(0)' onclick='getSelections()'>按钮</a>"
-                        } else {
-                            return "<button class='btn-blue' href='javascript:void(0)'>按钮</button>"
-                        }
-                    }
-                }
-            ],
-            onLoadSuccess: function () {
-            },
-            onDblClickRow: function (index, row) {
+                alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
     });
