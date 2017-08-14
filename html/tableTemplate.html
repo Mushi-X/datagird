@@ -83,7 +83,7 @@
 <script type="text/javascript">
     // 格式化输出表格标题
     template.helper('outputTitle', function (title, column, totalWidth, queryParams) {
-        var th = $("<th>");
+        var th = $("<th><div class='kyDatagrid-cell'></div></th>");
         th.attr("field", column.field);
         th.html(column.title);
         // 列是否可排序

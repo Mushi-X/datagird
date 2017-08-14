@@ -54,15 +54,18 @@ div.dataTables_filter label{font-weight: 400;text-align: left;white-space:nowrap
 div.dataTables_filter label input{ border-radius: 2px; border:1px solid #e4eaec; color: #76838f; height: 24px; width: 140px; padding-left: 3px;}
 
 .data-table{width: 100%; border-collapse: collapse;border-spacing:0; color: #76838f; }
-.data-table th{ border:1px solid #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; height: 36px; text-align: left; padding-left: 6px; }
-.data-table th.up{ background: url("img/ico-up.gif") no-repeat right center; }
-.data-table th.down{ background: url("img/ico-down.gif") no-repeat right center;}
-.data-table td{ border:1px solid #e4eaec; height: 36px; font-size: 14px; padding-left: 6px; vertical-align: middle;}
+.data-table th{ border:1px solid #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; height: 36px; text-align: left; }
+.data-table th.sortable{cursor: pointer}
+.data-table th.sortable .kyDatagrid-sort-icon{ background: url("img/arrow.png") no-repeat left center; padding-right: 12px;}
+.data-table th.up .kyDatagrid-sort-icon{ background: url("img/arrow-up.png") no-repeat left center; }
+.data-table th.down .kyDatagrid-sort-icon{ background: url("img/arrow-down.png") no-repeat left center;}
+.data-table td{ border:1px solid #e4eaec; height: 36px; font-size: 14px; vertical-align: middle;}
 .data-table tr.selected,.data-table tr.selected:hover{background: #ffe48d;}
 .data-table tr:nth-child(odd){background:#fbfdfd;}
 .data-table tr:nth-child(odd).selected,.data-table tr:nth-child(odd).selected:hover{background: #ffe48d;}
 .data-table tr:hover{background:#f3f7f9;}
 .data-table td.center{text-align: center}
+.data-table .kyDatagrid-cell{padding:0 6px;}
 
 .state-one{ height: 20px; display: inline-block; padding: 0 8px; border-radius: 2px; background-color: #f96868; color: #fff; }
 .state-two{ height: 20px; display: inline-block; padding: 0 8px; border-radius: 2px; background-color: #46be8a; color: #fff; }

@@ -122,8 +122,6 @@
 
     // 创建表格
     function createTable(target, rows, options) {
-
-        //
         if (options.pagination && rows.length > options.pageSize) {
             rows = rows.slice(0, options.pageSize);
         }
@@ -134,10 +132,11 @@
             emptyRows.push("");
         }
 
-        // 根据模板生成HTML
-        var html = template('kyDatagrid', {rows: rows, emptyRows: emptyRows, options: options});
-        $(target).html(html);
+        $(target).wrap($("<div class='kyDatagrid-wrap'></div>"));
+        $(target).append(writeTableHead(target));
+        $(target).append(writeTableBody(target, rows));
         $(target).addClass("data-table marb-10 kyDatagrid");
+
         var selectedRows = $.data(target, 'kyDatagrid').selectedRows || [];
     }
 
@@ -224,7 +223,6 @@
 
     // 更新表格
     function reload(target, params) {
-        showLoading();
         // 获取表格基本配置
         var options = $.data(target, 'kyDatagrid').options;
 
@@ -261,17 +259,14 @@
                 }
                 // 绑定事件
                 bindEvent(target);
-                // 回调 onloadSuccess 方法
-                // 更新表格属性
+
+                // 更新表格配置
                 var kyDatagridData = $.data(target, 'kyDatagrid');
                 kyDatagridData.options = options;
                 kyDatagridData.rows = data.rows;
-                // 这里清空已经选择过的行记录
-                // kyDatagridData.selectedRows = undefined;
                 $.data(target, 'kyDatagrid', kyDatagridData);
+                // 回调 onloadSuccess 方法
                 options.onLoadSuccess(data);
-
-                removeLoading();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 createTable(target, [], options);
@@ -285,6 +280,7 @@
 
     // 移除表格
     function removeTable(target) {
+        $(target).unwrap($("<div class='kyDatagrid-wrap'></div>"));
         $(target).html("");
         $(target).next(".fenye").remove();
     }
@@ -528,12 +524,261 @@
         }
     }
 
-    function showLoading(){
+
+    function showLoading() {
 
     }
 
-    function removeLoading(){
 
+    function removeLoading() {
+
+    }
+
+    // 输出表头
+    function writeTableHead(target) {
+        var options = $(target).kyDatagrid('options');
+        var length = getMaxDeepLength(options.columns);
+        // 获取当前表格的宽度
+        var totalWidth = getTotalWidth(getRealColumns(options.columns));
+        var queryParams = options.queryParams;
+        var rows = new Array(length);
+        for (var i = 0; i < length; i++) {
+            rows[i] = [];
+        }
+        // 获取解析后的表头行配置
+        rows = resolveHeader(options.columns, rows);
+        var thead = $("<thead>");
+        // 遍历输出表头行
+        for (var i = 0; i < rows.length; i++) {
+            var tr = $("<tr>");
+            // 第一行需要初始化 行号列单元格 和 全选框单元格
+            if (i == 0) {
+                // 添加行号列单元格
+                if (options.rownumbers) {
+                    var rowNumTh = $("<th><div class='kyDatagrid-cell'></div></th>");
+                    rowNumTh.css({"min-width": "36px", "max-width": "36px"})
+                        .attr("rowspan", rows.length);
+                    tr.append(rowNumTh);
+                }
+                // 添加全选框单元格
+                if (options.enableChecked) {
+                    var checkBoxTh = $("<th></th>");
+                    checkBoxTh.css({"min-width": "36px", "max-width": "36px", "text-align": "center"})
+                        .attr("rowspan", rows.length);
+                    checkBoxTh.append("<input type='checkbox' id='kyDatagridAllCheckbox'>");
+                    tr.append(checkBoxTh);
+                }
+            }
+
+            // 获取每行配置
+            var row = rows[i];
+            // 遍历当前行，输出每个单元格
+            for (var j = 0; j < row.length; j++) {
+                var column = row[j];
+                var th = $("<th></th>");
+                th.attr("field", column.field);
+                var div = $("<div class='kyDatagrid-cell'></div>");
+                div.append("<span>" + column.title + "</span>");
+                // 列是否可排序
+                if (column.sortable == true) {
+                    th.addClass("sortable");
+                    div.append("<span class='kyDatagrid-sort-icon'></span>")
+                    if (column.field == queryParams.sort && queryParams.order == "desc") {
+                        th.addClass("down");
+                    }
+                    else if (column.field == queryParams.sort && queryParams.order == "asc") {
+                        th.addClass("up");
+                    }
+                }
+                // 列是否隐藏
+                if (column.hidden == true) {
+                    th.css("display", "none");
+                }
+
+                if (column.childColumns == undefined || column.childColumns.length <= 0) {
+                    th.attr("rowspan", length - i);
+                    // 下方没有元素时可以 设置对齐方式
+                    var titleAlign = column.titleAlign || column.align;
+                    switch (titleAlign) {
+                        case 'left':
+                            th.css("text-align", "left");
+                            break;
+                        case 'center':
+                            th.css("text-align", "center");
+                            break;
+                        case 'right':
+                            th.css("text-align", "right");
+                            break;
+                        default:
+                            th.css("text-align", "left");
+                            break;
+                    }
+                    // 下方没有元素时可以 设置宽度自适应
+                    var columnWidth = column.width == undefined ? 100 : column.width;
+                    th.css("width", parseInt(columnWidth / totalWidth * 100) + "%");
+                }
+                else {
+                    th.css("text-align", "center");
+                    th.attr("colspan", getColspan(column.childColumns));
+                }
+                th.append(div);
+                tr.append(th);
+            }
+
+            thead.append(tr);
+        }
+        return thead[0].outerHTML;
+    }
+
+    // 输出表格主体
+    function writeTableBody(target, rows) {
+        var options = $(target).kyDatagrid('options');
+        var columns = getRealColumns(options.columns);
+        var tbody = $("<tbody>");
+        for (var i = 0; i < rows.length; i++) {
+            var tr = $("<tr>");
+            var row = rows[i];
+            tr.attr("id", "kyDatagrid-row-" + i)
+                .attr("index", i)
+                .addClass("kyDatagrid-row")
+            // 是否显示行号
+            if (options.rownumbers) {
+                var rowNumTd = $("<td>");
+                rowNumTd.html((options.pageNumber - 1 ) * options.pageSize + i + 1);
+                rowNumTd.addClass("center");
+                tr.append(rowNumTd);
+            }
+            // 是否显示复选框
+            if (options.enableChecked) {
+                var checkboxTd = $("<td>");
+                checkboxTd.html('<input type="checkbox" class="kyDatagridCheckbox"/>');
+                checkboxTd.addClass("center");
+                tr.append(checkboxTd);
+            }
+            // 遍历输出每个单元格
+            for (var j = 0; j < columns.length; j++) {
+                var td = $("<td>");
+                var column = columns[j];
+                var value = row[column.field] || "";
+                var div = $("<div>");
+                div.addClass("kyDatagrid-cell");
+                // 是否需要格式化输出
+                if (column.formatter) {
+                    div.append(column.formatter(value, row, i))
+                }
+                else {
+                    div.html(value);
+                }
+                td.append(div);
+
+                switch (column.align) {
+                    case 'left':
+                        td.css("text-align", "left");
+                        break;
+                    case 'center':
+                        td.css("text-align", "center");
+                        break;
+                    case 'right':
+                        td.css("text-align", "right");
+                        break;
+                    default:
+                        td.css("text-align", "left");
+                        break;
+                }
+                tr.append(td);
+            }
+            tbody.append(tr);
+        }
+        return tbody[0].outerHTML;
+    }
+
+    // 递归获取columns的最深层数
+    function getMaxDeepLength(columns, length) {
+        length = length || 0;
+        // 调用默认增加一层深度，初始从 0 开始
+        var maxLength = ++length;
+
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头且长度不小于 0 时进行递归
+            if (column.childColumns && column.childColumns.length > 0) {
+                // 获取该列的深度。
+                var theLength = getMaxDeepLength(column.childColumns, length);
+                // 判断是否比当前最大深度大
+                if (theLength > maxLength) {
+                    maxLength = theLength;
+                }
+            }
+        }
+        return maxLength;
+    }
+
+    // 解析表头，将一层数组转换成多层数组
+    function resolveHeader(columns, rows, length) {
+        // 初始为 -1 ，因为数组下标从 0 开始，方便使用
+        length = length || 0;
+
+        // 调用默认增加一层深度，初始从 -1 开始
+        var curLength = ++length;
+
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            rows[length - 1].push(column);
+
+            if (column.childColumns && column.childColumns.length > 0) {
+                rows = resolveHeader(column.childColumns, rows, curLength);
+            }
+        }
+        return rows;
+    }
+
+    // 获取当前表头跨列数量
+    function getColspan(columns, length) {
+        length = length || 0;
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头时不需要计算当前数量
+            if (column.childColumns && column.childColumns.length > 0) {
+                length = getColspan(column.childColumns, length);
+            } else {
+                length++;
+            }
+        }
+
+        return length;
+
+    }
+
+    // 计算表格总宽度
+    function getTotalWidth(columns) {
+        var totalWidth = 0;
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            if (!column.hidden) {
+                var width = column.width == undefined ? 100 : column.width;
+                totalWidth += width;
+            }
+        }
+        return totalWidth;
+    }
+
+    // 获取表格实际显示时的列对象
+    function getRealColumns(columns, realColumns) {
+        realColumns = realColumns || [];
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            // 有子表头且长度不小于 0 时进行递归
+            if (column.childColumns && column.childColumns.length > 0) {
+                realColumns = getRealColumns(column.childColumns, realColumns);
+            }
+            // 没有子表头时表示是最下面一行，直接放入 realColumns
+            else {
+                if (!column.hidden) {
+                    realColumns.push(column);
+                }
+            }
+        }
+        return realColumns;
     }
 
 })(jQuery);
