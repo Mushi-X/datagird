@@ -82,4 +82,6 @@ div.dataTables_filter label input{ border-radius: 2px; border:1px solid #e4eaec;
 .page-box li.num.active a{ background-color: #6eaed9; color: #fff; }
 
 /* kyTable css */
-.kyTable{margin-top:10px;}
+.kyDatagrid-wrap{ }
+
+.pagination { line-height: 32px; margin: 10px 0; }

@@ -23,26 +23,7 @@
 </body>
 
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="js/template.js" type="text/javascript"></script>
 <script src="js/kyDatagrid.js" type="text/javascript"></script>
-<!-- kyDatagrid 表格分页模板 -->
-<script id="kyDatagridPage" type="text/html">
-    <div class="fenye">
-        <div class="left list-show">第{{rowBegin}}到{{rowEnd}}条记录，共{{totalCount}}条</div>
-        <ul class="right page-box">
-            <li class="pre" pageno="{{pageNo-1}}"><a class="{{if pageNo <= 1}}hui{{/if}}" href="javascript:void(0)">上一页</a></li>
-            {{each pageScope as page}}
-            {{if page==pageNo}}
-            <li class="num active" pageno="{{page}}"><a href="javascript:void(0)" class="">{{page}}</a></li>
-            {{else}}
-            <li class="num" pageno="{{page}}"><a href="javascript:void(0)" class="">{{page}}</a></li>
-            {{/if}}
-            {{/each}}
-            <li class="next" pageno={{pageNo+1}}><a class="{{if pageNo >= totalPage}}hui{{/if}}" href="javascript:void(0)">下一页</a></li>
-        </ul>
-        <div class=" clearfix"></div>
-    </div>
-</script>
 
 <script type="text/javascript">
     $(function () {

@@ -132,16 +132,26 @@
             emptyRows.push("");
         }
 
-        $(target).wrap($("<div class='kyDatagrid-wrap'></div>"));
+        $(target).wrap($("<div class='kyDatagrid-wrap'></div>")).wrap("<div class='kyDatagrid-view'></div>");
+
+        var screenHeight = $(window).height();
+
+        // 测试定位,目前只能在一个页面只有一个表格时生效。第二个表格的高度会变成0
+        // var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
+        // $(target).parents('.kyDatagrid-wrap').css('height', screenHeight - offsetTop);
+        // $(target).parents('.kyDatagrid-view').css('height', screenHeight - offsetTop - 52);
+
         $(target).append(writeTableHead(target));
         $(target).append(writeTableBody(target, rows));
-        $(target).addClass("data-table marb-10 kyDatagrid");
+        $(target).addClass("data-table kyDatagrid");
 
         var selectedRows = $.data(target, 'kyDatagrid').selectedRows || [];
     }
 
     // 创建分页
     function createPagination(target, totalCount, options) {
+        var kyDatagridPanel = $(target).parents(".kyDatagrid-wrap");
+        // 获取分页相关参数
         var totalCount = parseInt(totalCount);           // 总记录数
         var pageNo = parseInt(options.pageNumber);       // 当前页数
         var maxPageLen = parseInt(options.maxPageLen);   // 页码长度
@@ -182,20 +192,48 @@
         var rowBegin = totalCount > 0 ? (pageNo - 1) * pageSize + 1 : 0;
         var rowEnd = pageNo * pageSize > totalCount ? totalCount : pageNo * pageSize;
 
-        // 根据模板生成分页HTML
-        var html = template('kyDatagridPage', {
-            totalCount: totalCount,
-            pageNo: pageNo,
-            pageSize: pageSize,
-            totalPage: totalPage,
-            pageScope: pageScope,
-            rowBegin: rowBegin,
-            rowEnd: rowEnd
-        });
-        $(target).after(html);
+        var pagination = $("<div class='pagination'></div>");
+
+        pagination.append('<div class="left list-show">显示第' + rowBegin + '到' + rowEnd + '条，共' + totalCount + '条</div>');
+        // 创建分页列表 ul
+        var ul = $('<ul class="right page-box"></ul>');
+        // region // 上一页
+        var preLi = $("<li class='pre'><a href='javascript:void(0)'>上一页</a></li>");
+        preLi.attr("pageno", pageNo - 1);
+        if (pageNo <= 1) {
+            preLi.find("a").addClass("hui");
+        }
+        ul.append(preLi);
+        // endregion
+        for (var i = 0; i < pageScope.length; i++) {
+            var curPage = pageScope[i];
+            var pageLi = $("<li class='num'><a href='javascript:void(0)'></a></li>");
+            pageLi.attr("pageno", curPage);
+            pageLi.find("a").html(curPage);
+            if (curPage == pageNo) {
+                pageLi.addClass("active");
+            }
+            ul.append(pageLi);
+        }
+
+        // region // 下一页
+        var nextLi = $("<li class='next'><a href='javascript:void(0)'>下一页</a></li>");
+        nextLi.attr("pageno", pageNo + 1);
+        if (pageNo >= totalPage) {
+            nextLi.find("a").addClass("hui");
+        }
+        ul.append(nextLi);
+        // endregion
+
+
+        // ul.append('<li class="pre" pageno="' + pageNo - 1 + '"><a class="{{if pageNo <= 1}}hui{{/if}}" href="javascript:void(0)">上一页</a></li>');
+        pagination.append(ul);
+        pagination.append("<div class='clearfix'></div>")
+        $(kyDatagridPanel).append(pagination);
+
 
         // 绑定翻页事件
-        $(target).next('.fenye').find(".page-box li a").on("click", function () {
+        $(kyDatagridPanel).find(".pagination .page-box li a").on("click", function () {
             // 表示按钮不可点
             if ($(this).hasClass("hui") || $(this).hasClass("cur")) {
                 return;
@@ -280,9 +318,9 @@
 
     // 移除表格
     function removeTable(target) {
-        $(target).unwrap($("<div class='kyDatagrid-wrap'></div>"));
+        $(target).unwrap(".kyDatagrid-view").unwrap($("<div class='kyDatagrid-wrap'></div>"));
         $(target).html("");
-        $(target).next(".fenye").remove();
+        $(target).next(".pagination").remove();
     }
 
     // 绑定事件
@@ -522,16 +560,6 @@
         else {
             alert("unsupport data type.you should use Array or JSON data to create a table");
         }
-    }
-
-
-    function showLoading() {
-
-    }
-
-
-    function removeLoading() {
-
     }
 
     // 输出表头
