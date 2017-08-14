@@ -2,56 +2,16 @@
 /* CSS Document */
 
 *{font-size:14px;border:0;margin:0;padding:0;}
-body{font-family:'微软雅黑'; margin:0 auto; background-color: #ffffff;}
-ul{margin:0;padding:0;list-style:none;}
-li{margin:0;padding:0;list-style: none;}
+body{font-family:'微软雅黑'; }
+ul{list-style:none;}
+li{list-style: none;}
 img{border:0;}
-dl,dt,dd,span{margin:0;padding:0;}
 a,a:focus{text-decoration:none;color:#000;outline:none;blr:expression(this.onFocus=this.blur());}
 a:hover{color:#ff0000;text-decoration:none;}
 table{border-collapse:collapse;border-spacing: 0;}
-cite{font-style:normal;}
-h2{font-weight:normal;}
 .clearfix{ clear: both; font-size: 1px; }
 .left{ float: left; }
 .right{ float: right; }
-.marr-10{ margin-right: 10px; }
-.marb-10{ margin-bottom: 10px; }
-
-.title{ font-size: 14px;  color: #76838f; text-align: left; padding-left: 8px;}
-.content{}
-.content .top{ height: 36px; line-height: 31px; background-color: #fff; border-bottom: 1px solid #e4eaec; }
-.content .body{ background-color: #fff; padding: 10px; margin: 0px;}
-
-.btn-group{}
-.btn-group .btn{ display: inline-block; background: url(img/btn-bg.gif) no-repeat right top;padding-right: 18px; height: 34px; position: relative;  font-size: 14px; color: #768395; vertical-align: middle; padding-left: 18px; line-height: 34px; }
-.btn-group .btn .btn-left{ background: url(img/btn-left-bg.gif) no-repeat left top; width: 18px; height: 34px; position: absolute; left: 0; top:0; }
-.btn-group .btn img{display: block; width: 20px; height:20px; float: left; padding-top: 7px; }
-.btn-group .btn:hover{ display: inline-block; background: url(img/btn-bgh.gif) no-repeat right top;padding-right: 18px; height: 34px; position: relative;  font-size: 14px; color: #768395; vertical-align: middle; padding-left: 18px; line-height: 34px; }
-.btn-group .btn:hover .btn-left{ background: url(img/btn-left-bgh.gif) no-repeat left top; width: 18px; height: 34px; position: absolute; left: 0; top:0; }
-.btn-group .btn:hover img{display: block; width: 20px; height:20px; float: left; padding-top: 7px; }
-
-.margin-b{ margin-bottom: 10px; }
-.btn-blue{ display: inline-block; background:none; border:1px solid #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #62a8ea; font-size: 12px; }
-.btn-blue:hover{ display: inline-block; background-color: #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #fff; font-size: 12px; }
-.btn-blue-sm{ padding:1px; display: inline-block; background:none; border:1px solid #62a8ea; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #62a8ea; font-size: 10px; }
-.btn-blue-sm:hover{ padding:1px; display: inline-block; background-color: #62a8ea; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #fff; font-size: 10px; }
-.btn-green{ display: inline-block; background: none; border:1px solid #46be8a; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #46be8a; font-size: 12px; }
-.btn-green:hover{ display: inline-block; background-color: #46be8a; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #fff; font-size: 12px; }
-.btn-green-sm{ padding:1px; display: inline-block; background: none; border:1px solid #46be8a; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #46be8a; font-size: 10px; }
-.btn-green-sm:hover{ padding:1px; display: inline-block; background-color: #46be8a; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #fff; font-size: 10px; }
-.btn-orange{ display: inline-block; background:none; border:1px solid #f2a654; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #f2a654; font-size: 12px; }
-.btn-orange:hover{ display: inline-block; background-color: #f2a654; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #fff; font-size: 12px; }
-.btn-orange-sm{ padding:1px; display: inline-block; background:none; border:1px solid #f2a654; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #f2a654; font-size: 10px; }
-.btn-orange-sm:hover{ padding:1px; display: inline-block; background-color: #f2a654; height: 15px; min-width: 40px; text-align: center; line-height: 15px; color: #fff; font-size: 10px; }
-
-
-div.dataTables_length label{ font-weight: 400;text-align: left;white-space:nowrap; color: #76838f; }
-.form-control{ display: inline-block; vertical-align: middle; width: auto; border:1px solid #e4eaec; color: #76838f;}
-select.form-control{ background:#fff ; padding-right: 30px; }
-select.input-sm{ height: 26px; line-height: 26px; }
-div.dataTables_filter label{font-weight: 400;text-align: left;white-space:nowrap; color: #76838f; }
-div.dataTables_filter label input{ border-radius: 2px; border:1px solid #e4eaec; color: #76838f; height: 24px; width: 140px; padding-left: 3px;}
 
 .data-table{width: 100%; border-collapse: collapse;border-spacing:0; color: #76838f; }
 .data-table th{ border:1px solid #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; height: 36px; text-align: left; }
@@ -81,7 +41,7 @@ div.dataTables_filter label input{ border-radius: 2px; border:1px solid #e4eaec;
 .page-box li.num a{display: block;border:1px solid #ddd; border-right: none;height: 30px; line-height: 30px; width:28px;font-size: 14px; color: #666;}
 .page-box li.num.active a{ background-color: #6eaed9; color: #fff; }
 
-/* kyTable css */
+/* kyDatagrid css */
 .kyDatagrid-wrap{ }
 
 .pagination { line-height: 32px; margin: 10px 0; }
