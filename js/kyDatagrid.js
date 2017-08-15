@@ -308,6 +308,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 createTable(target, [], options);
+                // 根据配置判断是否创建分页
                 if (options.pagination) {
                     createPagination(target, 0, options);
                 }
@@ -666,63 +667,112 @@
         var options = $(target).kyDatagrid('options');
         var columns = getRealColumns(options.columns);
         var tbody = $("<tbody>");
-        for (var i = 0; i < rows.length; i++) {
+        if (rows.length > 0) {
+            // 遍历输出每行数据
+            for (var i = 0; i < rows.length; i++) {
+                var tr = $("<tr>");
+                var row = rows[i];
+                tr.attr("id", "kyDatagrid-row-" + i)
+                    .attr("index", i)
+                    .addClass("kyDatagrid-row")
+                // 是否显示行号
+                if (options.rownumbers) {
+                    var rowNumTd = $("<td>");
+                    rowNumTd.html((options.pageNumber - 1 ) * options.pageSize + i + 1);
+                    rowNumTd.addClass("center");
+                    tr.append(rowNumTd);
+                }
+                // 是否显示复选框
+                if (options.enableChecked) {
+                    var checkboxTd = $("<td>");
+                    checkboxTd.html('<input type="checkbox" class="kyDatagridCheckbox"/>');
+                    checkboxTd.addClass("center");
+                    tr.append(checkboxTd);
+                }
+                // 遍历输出每个单元格
+                for (var j = 0; j < columns.length; j++) {
+                    var td = $("<td>");
+                    var column = columns[j];
+                    var value = row[column.field] || "";
+                    var div = $("<div>");
+                    div.addClass("kyDatagrid-cell");
+                    // 是否需要格式化输出
+                    if (column.formatter) {
+                        div.append(column.formatter(value, row, i))
+                    }
+                    else {
+                        div.html(value);
+                    }
+                    if (column.hidden) {
+                        td.css("display", "none");
+                    }
+                    td.append(div);
+
+                    switch (column.align) {
+                        case 'left':
+                            td.css("text-align", "left");
+                            break;
+                        case 'center':
+                            td.css("text-align", "center");
+                            break;
+                        case 'right':
+                            td.css("text-align", "right");
+                            break;
+                        default:
+                            td.css("text-align", "left");
+                            break;
+                    }
+                    tr.append(td);
+                }
+                tbody.append(tr);
+            }
+            // 输出空行
+            if (rows.length < options.pageSize) {
+                for (var i = 0; i < options.pageSize - rows.length; i++) {
+                    var tr = $("<tr>");
+                    // 是否显示行号
+                    if (options.rownumbers) {
+                        tr.append($("<td>"));
+                    }
+                    // 是否显示复选框
+                    if (options.enableChecked) {
+                        tr.append($("<td>"));
+                    }
+                    for (var j = 0; j < columns.length; j++) {
+                        var column = columns[j];
+                        if (column.hidden) {
+                        } else {
+                            tr.append($("<td>"));
+                        }
+                    }
+                    tbody.append(tr);
+                }
+            }
+        }
+        else {
+            // 输出空行
             var tr = $("<tr>");
-            var row = rows[i];
-            tr.attr("id", "kyDatagrid-row-" + i)
-                .attr("index", i)
-                .addClass("kyDatagrid-row")
+            var emptyTd = $("<td>");
+            // 获取跨列数量
+            var colspan = getColspan(columns);
             // 是否显示行号
             if (options.rownumbers) {
-                var rowNumTd = $("<td>");
-                rowNumTd.html((options.pageNumber - 1 ) * options.pageSize + i + 1);
-                rowNumTd.addClass("center");
-                tr.append(rowNumTd);
+                colspan++;
             }
-            // 是否显示复选框
+            // 是否启用复选框
             if (options.enableChecked) {
-                var checkboxTd = $("<td>");
-                checkboxTd.html('<input type="checkbox" class="kyDatagridCheckbox"/>');
-                checkboxTd.addClass("center");
-                tr.append(checkboxTd);
+                colspan++;
             }
-            // 遍历输出每个单元格
-            for (var j = 0; j < columns.length; j++) {
-                var td = $("<td>");
-                var column = columns[j];
-                var value = row[column.field] || "";
-                var div = $("<div>");
-                div.addClass("kyDatagrid-cell");
-                // 是否需要格式化输出
-                if (column.formatter) {
-                    div.append(column.formatter(value, row, i))
-                }
-                else {
-                    div.html(value);
-                }
-                if (column.hidden) {
-                    td.css("display", "none");
-                }
-                td.append(div);
+            emptyTd.attr("colspan", colspan).css("text-align", "center");
 
-                switch (column.align) {
-                    case 'left':
-                        td.css("text-align", "left");
-                        break;
-                    case 'center':
-                        td.css("text-align", "center");
-                        break;
-                    case 'right':
-                        td.css("text-align", "right");
-                        break;
-                    default:
-                        td.css("text-align", "left");
-                        break;
-                }
-                tr.append(td);
-            }
+            var div = $("<div>");
+            div.addClass("kyDatagrid-cell");
+            div.html(options.emptyMsg);
+            emptyTd.append(div);
+            tr.append(emptyTd);
             tbody.append(tr);
         }
+
         return tbody[0].outerHTML;
     }
 

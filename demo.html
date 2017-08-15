@@ -44,7 +44,7 @@
             pageNumber: 1,
             emptyMsg: '这里没有数据！',
             pageSize: 15,
-            maxPageLen: 6,
+            maxPageLen: 5,
             columns: [
                 {field: 'ID', title: 'ID', width: 100, hidden: true},
                 {
@@ -54,7 +54,7 @@
                     }
                 },
                 {
-                    field: 'status', title: '商品状态', width: 100, align: 'center', titleAlign: 'left',
+                    field: 'status', title: '商品状态', width: 100, align: 'center',
                     formatter: function (val, row, index) {
                         switch (val) {
                             case 1 :
@@ -73,7 +73,7 @@
                             field: 'info', title: '基本信息', width: 100,
                             childColumns: [
                                 {field: 'unit', title: '单位', width: 100, align: 'center'},
-                                {field: 'num', title: '数量', width: 100, sortable: true},
+                                {field: 'num', title: '数量', width: 100, align: 'right', sortable: true},
                                 {field: 'price', title: '单价', width: 100, align: 'right', sortable: true}
                             ]
                         },
@@ -112,7 +112,7 @@
 
 
     function getSelections() {
-        console.log($("#demoTable").kyDatagrid('getSelections'));
+        console.log($("#demoTable").kyDatagrid('getSelected'));
     }
 </script>
 </html>

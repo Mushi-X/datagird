@@ -51,6 +51,57 @@
       "total": 1036,
       "sell": 123,
       "left": "900+"
+    },
+    {
+      "id": "4",
+      "name": "iPad",
+      "status": 1,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 613,
+      "price": "$1399.00",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 613,
+      "sell": 287,
+      "left": 326
+    },
+    {
+      "id": "5",
+      "name": "Mi Note",
+      "status": 2,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 613,
+      "price": "$1399.00",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 613,
+      "sell": 287,
+      "left": 326
+    },
+    {
+      "id": "5",
+      "name": "OPPO R11",
+      "status": 2,
+      "productValue": "productValue",
+      "info": "some product descipt",
+      "unit": "个",
+      "num": 613,
+      "price": "$1399.00",
+      "value1": "value1",
+      "value2": "value2",
+      "value3": "value3",
+      "stock": "how many product left",
+      "total": 613,
+      "sell": 287,
+      "left": 326
     }
   ]
 }
