@@ -422,22 +422,22 @@
         // region // 只有启用了复选框功能该方法才生效
         if (options.enableChecked) {
             row.find(".kyDatagridCheckbox").prop("checked", true);
-
-            var idField = options.idField;
-            var isExist = false;
-            for (var i = 0; i < selectedRows.length; i++) {
-                if (selectedRows[i][idField] == rows[index][idField]) {
-                    isExist = true;
-                }
-            }
-            if (!isExist) {
-                selectedRows.push(rows[index]);
-                kyDatagridData.selectedRows = selectedRows;
-            }
-            // 更新选中行数据
-            $.data(target, 'kyDatagrid', kyDatagridData);
         }
         // endregion
+
+        var idField = options.idField;
+        var isExist = false;
+        for (var i = 0; i < selectedRows.length; i++) {
+            if (selectedRows[i][idField] == rows[index][idField]) {
+                isExist = true;
+            }
+        }
+        if (!isExist) {
+            selectedRows.push(rows[index]);
+            kyDatagridData.selectedRows = selectedRows;
+        }
+        // 更新选中行数据
+        $.data(target, 'kyDatagrid', kyDatagridData);
 
         // region // 全选时设置表格的 全选 框为选中
         var isAllChecked = true;
@@ -473,18 +473,19 @@
         if (options.enableChecked) {
             row.find(".kyDatagridCheckbox").prop("checked", false);
 
-            var idField = options.idField;
-            for (var i = 0; i < selectedRows.length; i++) {
-                if (selectedRows[i][idField] == rows[index][idField]) {
-                    // 删除该记录
-                    selectedRows.splice(i, 1);
-                }
-            }
-            // 更新选中行数据
-            $.data(target, 'kyDatagrid', kyDatagridData);
             // 设置表格的 全选 框为没有选中
             $(target).find("#kyDatagridAllCheckbox").prop("checked", false);
         }
+
+        var idField = options.idField;
+        for (var i = 0; i < selectedRows.length; i++) {
+            if (selectedRows[i][idField] == rows[index][idField]) {
+                // 删除该记录
+                selectedRows.splice(i, 1);
+            }
+        }
+        // 更新选中行数据
+        $.data(target, 'kyDatagrid', kyDatagridData);
 
         options.onUnSelect(index, rows[index]);
     }
