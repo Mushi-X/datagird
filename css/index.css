@@ -49,9 +49,9 @@ table { border-collapse: collapse; border-spacing: 0; }
 .btn-rightt{display: inline-block;  background: url(img/rightt.png) no-repeat center; width: 20px; height: 20px; cursor: pointer; margin-top: 5px; }
 .btn-rf{display: inline-block;  background: url(img/reflash.png) no-repeat center; width: 16px; height: 16px; cursor: pointer; margin-top: 7px; }
 /* kyDatagrid css */
-.kyDatagrid-wrap { }
+.kyDatagrid-wrap { border:1px solid #e4eaec;}
 .kyDatagrid-view { position: relative; overflow: hidden; }
-.kyDatagrid-header { }
+.kyDatagrid-header {border-bottom: 1px solid #e4eaec }
 .kyDatagrid-body { overflow: auto;  }
 .kyDatagrid-view-left, .kyDatagrid-view-right { position: absolute; overflow: hidden; top: 0 }
 .kyDatagrid-view-left { left: 0 }

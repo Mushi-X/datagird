@@ -55,6 +55,7 @@
         pageNumber: 1,
         singleSelect: true,
         pageSize: 10,
+        scrollBarWidth: 18,
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
         emptyMsg: '记录为空!',
@@ -114,6 +115,11 @@
             return jq.each(function () {
                 unCheckAll(this);
             });
+        },
+        loadData: function (jq, data) {
+            return jq.each(function () {
+                loadData(this, data);
+            })
         }
     };
 
@@ -224,22 +230,21 @@
         // endregion
 
 
-
         // ul.append('<li class="pre" pageno="' + pageNo - 1 + '"><a class="{{if pageNo <= 1}}hui{{/if}}" href="javascript:void(0)">上一页</a></li>');
         pagination.append(ul);
         pagination.append("<div class='clearfix'></div>");
         pagination.empty();
         pagination.append(
             '<div class="page-box">' +
-                '<div class="left show-g"> ' +
-                    '<ul>' +
-                        '<li> <select class="select mart-5"> <option>10</option> <option>20</option> <option>30</option> </select> </li>' +
-                        '<li> <a href="#" class="btn-leftt"></a> <a href="#" class="btn-left"></a> </li> ' +
-                        '<li>第 <select class="select marb-3"> <option>1</option> <option>2</option> </select> 共2页 </li>' +
-                        '<li> <a href="#" class="btn-right"></a> <a href="#" class="btn-rightt"></a> </li> ' +
-                        '<li> <a href="#" class="btn-rf"></a> </li> ' +
-                    '</ul> ' +
-                '</div> ' +
+            '<div class="left show-g"> ' +
+            '<ul>' +
+            '<li> <select class="select mart-5"> <option>10</option> <option>20</option> <option>30</option> </select> </li>' +
+            '<li> <a href="#" class="btn-leftt"></a> <a href="#" class="btn-left"></a> </li> ' +
+            '<li>第 <select class="select marb-3"> <option>1</option> <option>2</option> </select> 共2页 </li>' +
+            '<li> <a href="#" class="btn-right"></a> <a href="#" class="btn-rightt"></a> </li> ' +
+            '<li> <a href="#" class="btn-rf"></a> </li> ' +
+            '</ul> ' +
+            '</div> ' +
             '<div class="num-show right">显示第1到15条，共151条</div> </div>');
 
         $(kyDatagridPanel).append(pagination);
@@ -284,7 +289,6 @@
         // 获取外层各对象
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var kyDatagridView = kyDatagridWrap.find(".kyDatagrid-view");
-
         kyDatagridView.append("<div class='kyDatagrid-header'>")
             .append("<div class='kyDatagrid-body'>");
         kyDatagridView.find(".kyDatagrid-header").append("<table class='data-table'>");
@@ -292,116 +296,9 @@
 
         kyDatagridView.find(".kyDatagrid-body").append("<table class='data-table'>");
 
-        if(options.pagination) {
+        if (options.pagination) {
             createPagination(target, 0, options);
         }
-        // 加载数据，params为空表示第一次加载
-        // reload(target);
-        var rows = [
-            {
-                "id": "1",
-                "name": "Apple Watch",
-                "status": 1,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 36,
-                "price": "$3.99",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 36,
-                "sell": 5,
-                "left": "30+"
-            },
-            {
-                "id": "2",
-                "name": "IPhone 7 Plus",
-                "status": 1,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 108,
-                "price": "$799.00",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 108,
-                "sell": 97,
-                "left": 11
-            },
-            {
-                "id": "3",
-                "name": "Macbook Air",
-                "status": 1,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 1036,
-                "price": "$1799.00",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 1036,
-                "sell": 123,
-                "left": "900+"
-            },
-            {
-                "id": "4",
-                "name": "iPad",
-                "status": 1,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 613,
-                "price": "$1399.00",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 613,
-                "sell": 287,
-                "left": 326
-            },
-            {
-                "id": "5",
-                "name": "Mi Note",
-                "status": 2,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 613,
-                "price": "$1399.00",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 613,
-                "sell": 287,
-                "left": 326
-            },
-            {
-                "id": "5",
-                "name": "OPPO R11",
-                "status": 2,
-                "productValue": "productValue",
-                "info": "some product descipt",
-                "unit": "个",
-                "num": 613,
-                "price": "$1399.00",
-                "value1": "value1",
-                "value2": "value2",
-                "value3": "value3",
-                "stock": "how many product left",
-                "total": 613,
-                "sell": 287,
-                "left": 326
-            }
-        ];
-        kyDatagridView.find(".kyDatagrid-body table").append(writeTableBody(target, rows));
     }
 
     // 更新表格
@@ -420,10 +317,6 @@
             $.extend(queryParams, {page: options.pageNumber, rows: options.pageSize});
         }
 
-        // init(target);
-        // 设置列宽
-        setColWidth(target)
-
         // ajax加载数据
         // 返回结果 json 格式为 {total:0,rows:[]}
         // 其中 total 为总记录数 ， rows 为列表数组数据,里面每行json表示一行数据
@@ -433,46 +326,35 @@
             data: queryParams,
             dataType: 'json',
             success: function (data) {
-
                 loadData(target, data);
-                //removeTable(target);
-                // 创建表格
-                //createTable(target, data.rows, options);
-                // 根据配置判断是否创建分页
-                if (options.pagination) {
-                    // createPagination(target, data.total, options);
-                }
-
                 // 回调 onloadSuccess 方法
                 options.onLoadSuccess(data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                //createTable(target, [], options);
-                // 根据配置判断是否创建分页
-                if (options.pagination) {
-                    //createPagination(target, 0, options);
-                }
+                loadData(target, []);
+                // 回调 onLoadError 方法
                 options.onLoadError();
             }
         });
-
-        // 绑定事件
-        bindEvent(target);
-        // 设置表格高度
-        setTableHeight(target);
-
     }
 
     // 加载数据
     function loadData(target, data) {
         var options = $(target).kyDatagrid('options');
-        data = formatResult(options, data);
+        var data = formatResult(options, data);
+        $(target).siblings(".kyDatagrid-body").find("table").empty().append(writeTableBody(target, data.rows));
 
         // 更新表格配置
         var kyDatagridData = $.data(target, 'kyDatagrid');
         kyDatagridData.options = options;
         kyDatagridData.rows = data.rows;
         $.data(target, 'kyDatagrid', kyDatagridData);
+        // 绑定事件
+        bindEvent(target);
+        // 设置表格高度
+        setTableHeight(target);
+        // 设置列宽
+        setColWidth(target);
     }
 
     // 移除表格
@@ -488,21 +370,27 @@
     function bindEvent(target) {
         var options = $(target).kyDatagrid('options');
         // 绑定表头排序事件
-        $(target).siblings(".kyDatagrid-header").find("th.sortable").click(function (event) {
+        $(target).siblings(".kyDatagrid-header").find("th.sortable").unbind("click").click(function (event) {
             var order = "desc";
             var field = $(this).attr("field");
             // 只有当前元素是降序排序时才更新为升序，否则默认为降序排序
             if ($(this).hasClass("down")) {
                 order = "asc";
             }
+            $(target).siblings(".kyDatagrid-header").find("th.sortable").removeClass("down").removeClass("up");
+            if (order == "asc") {
+                $(this).addClass("up");
+            } else {
+                $(this).addClass("down");
+            }
+
             var queryParam = $.data(target, "kyDatagrid").options.queryParams;
             queryParam.sort = field;
             queryParam.order = order;
             reload(target, queryParam);
-            event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行单击事件
-        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").click(function (event) {
+        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("click").click(function (event) {
             // 表示空行,不进行任何操作
             if ($(this).hasClass("empty-row")) {
                 return;
@@ -522,18 +410,16 @@
             } else {
                 unCheckRow(target, index);
             }
-            event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定行双击事件
-        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").dblclick(function (event) {
+        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("dblclick").dblclick(function (event) {
             var rows = $.data(target, "kyDatagrid").rows;
             var index = $(this).attr("index");
             $.data(target, "kyDatagrid").options.onDblClickRow(index, rows[index]);
-            event.stopPropagation();    //  阻止事件冒泡
         });
         // 绑定 全选/取消全选 事件
         if (options.enableChecked) {
-            $(target).siblings(".kyDatagrid-header").find("#kyDatagridAllCheckbox").on("click", function () {
+            $(target).siblings(".kyDatagrid-header").find("#kyDatagridAllCheckbox").unbind("click").click(function () {
                 // 单选时禁止全选按钮事件
                 if (options.singleSelect) {
                     $(this).prop('checked', false);
@@ -562,8 +448,9 @@
             var screenHeight = $(window).height();
             var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
             $(target).parents('.kyDatagrid-wrap').css('height', screenHeight - offsetTop);
-            $(target).parents('.kyDatagrid-view').css('height', screenHeight - offsetTop - 52);
-            $(target).siblings('.kyDatagrid-body').css('height', screenHeight - offsetTop - 35 * getMaxDeepLength(options.columns) - 52);
+            $(target).parents('.kyDatagrid-view').css('height', screenHeight - offsetTop - 31);
+            $(target).siblings(".kyDatagrid-header").css("height", 35 * getMaxDeepLength(options.columns));
+            $(target).siblings('.kyDatagrid-body').css('height', screenHeight - offsetTop - 35 * getMaxDeepLength(options.columns) - 31);
         }
     }
 
@@ -573,26 +460,32 @@
 
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var maxWidth = kyDatagridWrap.width();
+
         var frozenColWidth = kyDatagridWrap.find(".kyDatagrid-header th.frozenCol").length;
 
         kyDatagridWrap.find(".kyDatagrid-header").css("width", maxWidth);
         kyDatagridWrap.find(".kyDatagrid-body").css("width", maxWidth);
-        kyDatagridWrap.find(".kyDatagrid-header table").css("width", maxWidth - 18);
-        kyDatagridWrap.find(".kyDatagrid-body table").css("width", maxWidth - 18);
+        kyDatagridWrap.find(".kyDatagrid-header table").css("width", maxWidth - options.scrollBarWidth);
+        kyDatagridWrap.find(".kyDatagrid-body table").css("width", maxWidth - options.scrollBarWidth);
 
-        maxWidth = maxWidth - 36 * frozenColWidth - 18;
-
+        // TODO 这里36是每列宽度。后期需要修改。左侧做成frozenCol
+        maxWidth = maxWidth - 36 * frozenColWidth - options.scrollBarWidth;
         var realColumns = getRealColumns(options.columns);
         var totalWidth = getTotalWidth(realColumns);
-
+        // 列宽度样式表
+        var styleSheet = [];
         // 遍历设置每列宽度
         for (var i = 0; i < realColumns.length; i++) {
             var column = realColumns[i];
             if (column.hidden == undefined || !column.hidden) {
                 var columnWidth = column.width == undefined ? 100 : column.width;
-                $(".kyDatagrid-cl-" + column.field).css("width", parseInt(columnWidth / totalWidth * maxWidth) - 12);
+                var columnKey = ".kyDatagrid-cl-" + column.field;
+                var width = parseInt(columnWidth / totalWidth * maxWidth) - 12;
+                styleSheet.push("" + columnKey + " {width:" + width + "px}");
             }
         }
+
+        writeStyleSheet(target, styleSheet);
     }
 
     // 判断行是否被选中
@@ -1062,6 +955,22 @@
             }
         }
         return realColumns;
+    }
+
+    function writeStyleSheet(target, styleSheet) {
+        // 创建style样式表
+        $("style[kyDatagrid]").remove();
+
+        // style = $("<style type='text/css' kyDatagrid='true'></style>");
+        var style = ["<style type='text/css' kyDatagrid='true'>"];
+
+
+        // 遍历添加样式
+        for (var i = 0; i < styleSheet.length; i++) {
+            style.push(styleSheet[i]);
+        }
+        style.push("</style>");
+        $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap"));
     }
 
 })(jQuery);
