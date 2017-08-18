@@ -60,6 +60,8 @@
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
         emptyMsg: '记录为空!',
+        trAttr:function(tr){
+        },
         onLoadSuccess: function (rows) {
         },
         onLoadError: function () {
@@ -367,7 +369,8 @@
     // 更新表格
     function reload(target, params) {
         // 获取表格基本配置
-        var options = $.data(target, 'kyDatagrid').options;
+        var state = $.data(target, 'kyDatagrid');
+        var options = state.options;
 
         // 传入参数不为空时,不保存原来的查询条件
         if (params != undefined && typeof params == "object") {
@@ -390,8 +393,6 @@
             dataType: 'json',
             success: function (data) {
                 loadData(target, data);
-                // 回调 onloadSuccess 方法
-                options.onLoadSuccess(data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 loadData(target, []);
@@ -399,6 +400,8 @@
                 options.onLoadError();
             }
         });
+        // 回调 onloadSuccess 方法
+        options.onLoadSuccess(state.data.rows);
     }
 
     // 移除表格
@@ -795,6 +798,8 @@
                     }
                     tr.append(td);
                 }
+
+                options.trAttr(tr);
                 tbody.append(tr);
             }
         }

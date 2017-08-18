@@ -43,10 +43,10 @@
             fit: true,
             enableChecked: true,
             pageNumber: 1,
-            scrollBarWidth:-1,
+            scrollBarWidth: -1,
             emptyMsg: '这里没有数据！',
             pageSize: 10,
-            pageList:[10,20,30,40],
+            pageList: [10, 20, 30, 40],
             columns: [
                 {field: 'id', title: 'ID', width: 100, hidden: true},
                 {
@@ -104,6 +104,9 @@
                     }
                 }
             ],
+            trAttr: function (tr) {
+                tr.attr("msAttr", "456");
+            },
             onLoadSuccess: function () {
             },
             onDblClickRow: function (index, row) {
