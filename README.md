@@ -66,4 +66,4 @@ $("#demoTable").kyDatagrid({
 到此，就可以完成表格的渲染了！
 
 ### 作者
-Mushi <huzhaobin@kingyea.com.cn>
+Mushi <446559749@qq.com>
