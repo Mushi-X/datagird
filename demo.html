@@ -104,11 +104,10 @@
                     }
                 }
             ],
-            rowAttr: function (tr,row,index) {
-                tr.attr("msAttr", "456");
+            trAttr: function (tr, row, index) {
             },
-            tableCellAttr
-            onLoadSuccess: function () {
+            onLoadSuccess: function (rows) {
+                console.log(rows);
             },
             onDblClickRow: function (index, row) {
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));

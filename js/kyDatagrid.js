@@ -155,6 +155,8 @@
 
         kyDatagridView.find(".kyDatagrid-body").append("<table class='data-table'>");
 
+        $.data(target, "kyDatagrid").headTable = kyDatagridView.find(".kyDatagrid-head table");
+        $.data(target, "kyDatagrid").bodyTable = kyDatagridView.find(".kyDatagrid-body table");
     }
 
     // 加载数据
@@ -449,11 +451,14 @@
     function setColWidth(target) {
         var options = $(target).kyDatagrid('options');
 
+        // 获取页面最大宽度。
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var maxWidth = kyDatagridWrap.width();
 
+        // 获取左侧固定列的数量
         var frozenColWidth = kyDatagridWrap.find(".kyDatagrid-head th.frozenCol").length;
 
+        // 设置个部分容器和表格的宽度
         kyDatagridWrap.find(".kyDatagrid-head").css("width", maxWidth);
         kyDatagridWrap.find(".kyDatagrid-body").css("width", maxWidth);
         kyDatagridWrap.find(".kyDatagrid-head table").css("width", maxWidth - options.scrollBarWidth);
@@ -476,6 +481,7 @@
             }
         }
 
+        // 写出样式表到页面
         writeStyleSheet(target, styleSheet);
     }
 
