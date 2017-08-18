@@ -33,7 +33,7 @@
             } else {      // 初始化
                 options = $.extend({}, $.fn.kyDatagrid.defaults, $.fn.kyDatagrid.parseOptions(this), options);
                 // 设置表格配置
-                $.data(this, 'kyDatagrid', {options: options});
+                $.data(this, 'kyDatagrid', {options: options, data: {total: 0, rows: []}});
                 init(this);
                 reload(this);
             }
@@ -44,6 +44,7 @@
     $.fn.kyDatagrid.defaults = {
         title: undefined,
         url: undefined,
+        height: undefined,
         idField: "id",
         method: 'post',
         queryParams: {},
@@ -55,7 +56,7 @@
         pageNumber: 1,
         singleSelect: true,
         pageSize: 10,
-        scrollBarWidth: 18,
+        scrollBarWidth: -1,
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
         emptyMsg: '记录为空!',
@@ -120,6 +121,11 @@
             return jq.each(function () {
                 loadData(this, data);
             })
+        },
+        changePage: function (jq, pageNo) {
+            return jq.each(function () {
+                changePage(this, pageNo);
+            })
         }
     };
 
@@ -127,155 +133,6 @@
     $.fn.kyDatagrid.parseOptions = function (target) {
         return {};
     };
-
-    // 创建表格
-    function createTable(target, rows, options) {
-        // 返回的数据量比 pageSize 大时截取返回结果
-        if (options.pagination && rows.length > options.pageSize) {
-            rows = rows.slice(0, options.pageSize);
-        }
-
-        var emptyRows = [];
-        var emptyLen = options.pageSize - rows.length;
-        while (emptyLen-- > 0) {
-            emptyRows.push("");
-        }
-
-        $(target).wrap($("<div class='kyDatagrid-wrap'></div>")).wrap("<div class='kyDatagrid-view'></div>");
-
-        $(target).append(writeTableHead(target));
-        $(target).append(writeTableBody(target, rows));
-        $(target).addClass("data-table kyDatagrid");
-
-        var selectedRows = $.data(target, 'kyDatagrid').selectedRows || [];
-    }
-
-    // 创建分页
-    function createPagination(target, totalCount, options) {
-        $(target).parents(".kyDatagrid-wrap").find(".pagination").remove();
-
-        var kyDatagridPanel = $(target).parents(".kyDatagrid-wrap");
-        // 获取分页相关参数
-        var totalCount = parseInt(totalCount);           // 总记录数
-        var pageNo = parseInt(options.pageNumber);       // 当前页数
-        var maxPageLen = parseInt(options.maxPageLen);   // 页码长度
-        var pageSize = parseInt(options.pageSize);       // 每页大小
-        // 计算总页数
-        var totalPage = (totalCount % pageSize == 0) ? totalCount / pageSize : (parseInt(totalCount / pageSize) + 1);
-
-        maxPageLen = totalPage > maxPageLen ? maxPageLen : totalPage;
-
-        var begin = 1;
-        // 比如 pageNo = 4 ,maxPageLen = 10, totalPage = 12
-        // 那么分页应该显示的是 1,2,3...,10
-        // 这种用于页码比较小,刚开始的时候
-        if (pageNo < maxPageLen / 2) {
-            begin = 1;
-        }
-        // 比如 pageNo = 9 ,maxPageLen = 10, totalPage = 12
-        // 那么分页应该显示的是 3,4,5...,12
-        // 这种用于页码比较大,快到总页数的时候
-        else if ((totalPage - pageNo) < maxPageLen / 2) {
-            begin = totalPage - maxPageLen + 1;
-        }
-        // 其他情况都是以当前页减去maxLenth的一半作为开始
-        // 比如 pageNo = 15 ,maxPageLen = 10, totalPage = 50
-        // 那么分页应该显示的是 10,11,12...,19
-        else {
-            begin = pageNo - parseInt(maxPageLen / 2);
-        }
-        begin = begin > 0 ? begin : 1;
-        // 分页页码数组
-        var pageScope = [];
-        var len = begin + maxPageLen;
-        for (begin; begin < len; begin++) {
-            pageScope.push(begin);
-        }
-
-        // 计算启示和结束行号
-        var rowBegin = totalCount > 0 ? (pageNo - 1) * pageSize + 1 : 0;
-        var rowEnd = pageNo * pageSize > totalCount ? totalCount : pageNo * pageSize;
-
-        var pagination = $("<div class='pagination'></div>");
-
-        pagination.append('<div class="left list-show">显示第' + rowBegin + '到' + rowEnd + '条，共' + totalCount + '条</div>');
-        // 创建分页列表 ul
-        var ul = $('<ul class="right page-box"></ul>');
-        // region // 上一页
-        var preLi = $("<li class='pre'><a href='javascript:void(0)'>上一页</a></li>");
-        preLi.attr("pageno", pageNo - 1);
-        if (pageNo <= 1) {
-            preLi.find("a").addClass("hui");
-        }
-        ul.append(preLi);
-        // endregion
-        for (var i = 0; i < pageScope.length; i++) {
-            var curPage = pageScope[i];
-            var pageLi = $("<li class='num'><a href='javascript:void(0)'></a></li>");
-            pageLi.attr("pageno", curPage);
-            pageLi.find("a").html(curPage);
-            if (curPage == pageNo) {
-                pageLi.addClass("active");
-            }
-            ul.append(pageLi);
-        }
-
-        // region // 下一页
-        var nextLi = $("<li class='next'><a href='javascript:void(0)'>下一页</a></li>");
-        nextLi.attr("pageno", pageNo + 1);
-        if (pageNo >= totalPage) {
-            nextLi.find("a").addClass("hui");
-        }
-        ul.append(nextLi);
-        // endregion
-
-
-        // ul.append('<li class="pre" pageno="' + pageNo - 1 + '"><a class="{{if pageNo <= 1}}hui{{/if}}" href="javascript:void(0)">上一页</a></li>');
-        pagination.append(ul);
-        pagination.append("<div class='clearfix'></div>");
-        pagination.empty();
-        pagination.append(
-            '<div class="page-box">' +
-            '<div class="left show-g"> ' +
-            '<ul>' +
-            '<li> <select class="select mart-5"> <option>10</option> <option>20</option> <option>30</option> </select> </li>' +
-            '<li> <a href="#" class="btn-leftt"></a> <a href="#" class="btn-left"></a> </li> ' +
-            '<li>第 <select class="select marb-3"> <option>1</option> <option>2</option> </select> 共2页 </li>' +
-            '<li> <a href="#" class="btn-right"></a> <a href="#" class="btn-rightt"></a> </li> ' +
-            '<li> <a href="#" class="btn-rf"></a> </li> ' +
-            '</ul> ' +
-            '</div> ' +
-            '<div class="num-show right">显示第1到15条，共151条</div> </div>');
-
-        $(kyDatagridPanel).append(pagination);
-
-
-        // 绑定翻页事件
-        $(kyDatagridPanel).find(".pagination .page-box li a").on("click", function () {
-            // 表示按钮不可点
-            if ($(this).hasClass("hui") || $(this).hasClass("cur")) {
-                return;
-            }
-            // 获取要跳转的页面
-            var pageno = $(this).parent().attr("pageno");
-            // 当前页也不能点
-            if (pageno == pageNo) {
-                return;
-            }
-            // 跳转页面
-            else {
-                var options = $(target).kyDatagrid('options');
-                options.pageNumber = pageno;
-                // 获取表格配置及参数
-                var kyDatagridData = $.data(target, 'kyDatagrid');
-                // 更新表格配置
-                kyDatagridData.options = options;
-                // 更新存放的 data
-                $.data(target, 'kyDatagrid', kyDatagridData);
-                $(target).kyDatagrid('reload');
-            }
-        })
-    }
 
     // 初始化表格结构
     function init(target) {
@@ -289,16 +146,222 @@
         // 获取外层各对象
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var kyDatagridView = kyDatagridWrap.find(".kyDatagrid-view");
-        kyDatagridView.append("<div class='kyDatagrid-header'>")
+        kyDatagridView.append("<div class='kyDatagrid-head'>")
             .append("<div class='kyDatagrid-body'>");
-        kyDatagridView.find(".kyDatagrid-header").append("<table class='data-table'>");
-        kyDatagridView.find(".kyDatagrid-header table").append(writeTableHead(target));
+        kyDatagridView.find(".kyDatagrid-head").append("<table class='data-table'>");
+        kyDatagridView.find(".kyDatagrid-head table").append(writeTableHead(target));
 
         kyDatagridView.find(".kyDatagrid-body").append("<table class='data-table'>");
 
+    }
+
+    // 加载数据
+    function loadData(target, data) {
+        var options = $(target).kyDatagrid('options');
+        var data = formatResult(options, data);
+        $(target).siblings(".kyDatagrid-body").find("table").empty().append(writeTableBody(target, data.rows));
+
+        // 更新表格配置
+        var kyDatagridData = $.data(target, 'kyDatagrid');
+        kyDatagridData.options = options;
+        kyDatagridData.data = data;
+        $.data(target, 'kyDatagrid', kyDatagridData);
+        // 是否显示分页
         if (options.pagination) {
-            createPagination(target, 0, options);
+            writePagination(target);
         }
+        // 绑定事件
+        bindEvent(target);
+        // 设置表格高度
+        setTableHeight(target);
+        // 设置列宽
+        setColWidth(target);
+    }
+
+    // 绑定事件
+    function bindEvent(target) {
+        var options = $(target).kyDatagrid('options');
+        // 绑定表头排序事件
+        $(target).siblings(".kyDatagrid-head").find("th.sortable").unbind("click").click(function (event) {
+            var order = "desc";
+            var field = $(this).attr("field");
+            // 只有当前元素是降序排序时才更新为升序，否则默认为降序排序
+            if ($(this).hasClass("down")) {
+                order = "asc";
+            }
+            $(target).siblings(".kyDatagrid-head").find("th.sortable").removeClass("down").removeClass("up");
+            if (order == "asc") {
+                $(this).addClass("up");
+            } else {
+                $(this).addClass("down");
+            }
+
+            var queryParam = $.data(target, "kyDatagrid").options.queryParams;
+            queryParam.sort = field;
+            queryParam.order = order;
+            reload(target, queryParam);
+        });
+        // 绑定行单击事件
+        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("click").click(function (event) {
+            // 表示空行,不进行任何操作
+            if ($(this).hasClass("empty-row")) {
+                return;
+            }
+            var rows = $.data(target, "kyDatagrid").data.rows;
+            var index = $(this).attr("index");
+
+            if (options.singleSelect) {
+                if (isChecked(target, index)) {
+                    unCheckAll(target);
+                } else {
+                    unCheckAll(target);
+                    checkRow(target, index);
+                }
+            } else if (!$(this).hasClass("selected")) {
+                checkRow(target, index);
+            } else {
+                unCheckRow(target, index);
+            }
+        });
+        // 绑定行双击事件
+        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("dblclick").dblclick(function (event) {
+            var rows = $.data(target, "kyDatagrid").data.rows;
+            var index = $(this).attr("index");
+            $.data(target, "kyDatagrid").options.onDblClickRow(index, rows[index]);
+        });
+        // 绑定 全选/取消全选 事件
+        if (options.enableChecked) {
+            $(target).siblings(".kyDatagrid-head").find("#kyDatagridAllCheckbox").unbind("click").click(function () {
+                // 单选时禁止全选按钮事件
+                if (options.singleSelect) {
+                    $(this).prop('checked', false);
+                } else {
+                    if (!$(this).prop("checked")) {
+                        unCheckAll(target);
+                    } else {
+                        checkAll(target);
+                    }
+                }
+            });
+        }
+
+        // resize 设置列宽
+        $(window).resize(function () {
+            setTableHeight(target);
+            setColWidth(target);
+        });
+    }
+
+    // 输出分页
+    function writePagination(target) {
+        var options = $(target).kyDatagrid('options');
+        $(target).parents(".kyDatagrid-wrap").find(".pagination").remove();
+        // 初始化，防止undefined
+        var totalCount = $.data(target, 'kyDatagrid').data.total;
+        var kyDatagridPanel = $(target).parents(".kyDatagrid-wrap");
+        // 获取分页相关参数
+        totalCount = parseInt(totalCount);               // 总记录数
+        var pageNo = parseInt(options.pageNumber);       // 当前页数
+        var pageSize = parseInt(options.pageSize);       // 每页大小
+
+        // 计算总页数
+        var totalPage = (totalCount % pageSize == 0) ? totalCount / pageSize : (parseInt(totalCount / pageSize) + 1);
+        totalPage = totalPage == 0 ? 1 : totalPage;
+        // 计算起始和结束行号
+        var rowBegin = totalCount > 0 ? (pageNo - 1) * pageSize + 1 : 0;
+        var rowEnd = pageNo * pageSize > totalCount ? totalCount : pageNo * pageSize;
+
+        var pagination = $("<div class='pagination '></div>")
+        var pageBox = $('<div class="page-box">' +
+            '<div class="left show-g">' +
+            '<ul>' +
+            '<li><select class="pagination-page-list"></select></li>' +
+            '<li><a href="javascript:void(0)" class="pagination-first"></a><a href="javascript:void(0)" class="pagination-prev"></a></li>' +
+            '<li>第<input type="text" class="pagination-num" name="pagination-num"> 共<span class="pagination-total-page"></span>页 </li>' +
+            '<li> <a href="javascript:void(0)" class="pagination-next"></a><a href="javascript:void(0)" class="pagination-last"></a></li>' +
+            '<li> <a href="javascript:void(0)" class="pagination-load"></a></li>' +
+            '</ul>' +
+            '</div>' +
+            '<div class="pagination-info">显示第0到0条，共0条</div>' +
+            '</div>');
+
+        // region // 每页记录数控制
+        var pageList = pageBox.find("select.pagination-page-list");
+        for (var i = 0; i < options.pageList.length; i++) {
+            var option = $("<option>");
+            option.html(options.pageList[i]);
+            option.val(options.pageList[i]);
+
+            if (options.pageSize == options.pageList[i]) {
+                option.prop("selected", true);
+            }
+            option.appendTo(pageList);
+        }
+
+        pageList.on("change", function (event) {
+            var pageSize = $(this).val();
+            options.pageSize = pageSize;
+            $.data(target, 'kyDatagrid').options = options;
+            reload(target);
+        });
+
+        pagination.append(pageBox);
+        // endregion
+
+        pageBox.find("input.pagination-num").val(pageNo);
+        // 修改页码后按回车跳页
+        pagination.on("keyup", "input.pagination-num", function (event) {
+            // 按下回车时跳转页面
+            if (event.which == 13) {
+                var curPageNum = $(this).val();
+                changePage(target, curPageNum);
+            }
+        });
+        // 更新记录信息
+        pagination.find(".pagination-total-page").html(totalPage);
+        pagination.find(".pagination-info").html("显示第" + rowBegin + "到" + rowEnd + "条，共" + totalCount + "条");
+
+        $(kyDatagridPanel).append(pagination);
+
+        // 绑定翻页事件
+        pagination.find(".pagination-first").on("click", function () {
+            changePage(target, 1);
+        });
+        pagination.find(".pagination-prev").on("click", function () {
+            changePage(target, pageNo - 1);
+        });
+        pagination.find(".pagination-next").on("click", function () {
+            changePage(target, pageNo + 1);
+        });
+        pagination.find(".pagination-last").on("click", function () {
+            changePage(target, totalPage);
+        });
+        pagination.find(".pagination-load").on("click", function () {
+            reload(target);
+        });
+    }
+
+    // 跳转到制定页
+    function changePage(target, pageNo) {
+        var options = $(target).kyDatagrid('options');
+
+        var state = $.data(target, 'kyDatagrid');
+
+        var totalPage = (state.data.total % options.pageSize == 0) ? state.data.total / options.pageSize : (parseInt(state.data.total / options.pageSize) + 1);
+        // 是否为正整数
+        if ((/^(\+|-)?\d+$/.test(pageNo)) && pageNo > 0) {
+            // 超过总页数时，跳转到尾页
+            if (pageNo > totalPage) {
+                pageNo = totalPage;
+            }
+        }
+        // 不为正整数时跳转到第一页
+        else {
+            pageNo = 1;
+        }
+
+        options.pageNumber = pageNo;
+        reload(target);
     }
 
     // 更新表格
@@ -338,25 +401,6 @@
         });
     }
 
-    // 加载数据
-    function loadData(target, data) {
-        var options = $(target).kyDatagrid('options');
-        var data = formatResult(options, data);
-        $(target).siblings(".kyDatagrid-body").find("table").empty().append(writeTableBody(target, data.rows));
-
-        // 更新表格配置
-        var kyDatagridData = $.data(target, 'kyDatagrid');
-        kyDatagridData.options = options;
-        kyDatagridData.rows = data.rows;
-        $.data(target, 'kyDatagrid', kyDatagridData);
-        // 绑定事件
-        bindEvent(target);
-        // 设置表格高度
-        setTableHeight(target);
-        // 设置列宽
-        setColWidth(target);
-    }
-
     // 移除表格
     function removeTable(target) {
         if ($(target).parents(".kyDatagrid-wrap").length > 0) {
@@ -366,91 +410,35 @@
         $(target).next(".pagination").remove();
     }
 
-    // 绑定事件
-    function bindEvent(target) {
-        var options = $(target).kyDatagrid('options');
-        // 绑定表头排序事件
-        $(target).siblings(".kyDatagrid-header").find("th.sortable").unbind("click").click(function (event) {
-            var order = "desc";
-            var field = $(this).attr("field");
-            // 只有当前元素是降序排序时才更新为升序，否则默认为降序排序
-            if ($(this).hasClass("down")) {
-                order = "asc";
-            }
-            $(target).siblings(".kyDatagrid-header").find("th.sortable").removeClass("down").removeClass("up");
-            if (order == "asc") {
-                $(this).addClass("up");
-            } else {
-                $(this).addClass("down");
-            }
-
-            var queryParam = $.data(target, "kyDatagrid").options.queryParams;
-            queryParam.sort = field;
-            queryParam.order = order;
-            reload(target, queryParam);
-        });
-        // 绑定行单击事件
-        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("click").click(function (event) {
-            // 表示空行,不进行任何操作
-            if ($(this).hasClass("empty-row")) {
-                return;
-            }
-            var rows = $.data(target, "kyDatagrid").rows;
-            var index = $(this).attr("index");
-
-            if (options.singleSelect) {
-                if (isChecked(target, index)) {
-                    unCheckAll(target);
-                } else {
-                    unCheckAll(target);
-                    checkRow(target, index);
-                }
-            } else if (!$(this).hasClass("selected")) {
-                checkRow(target, index);
-            } else {
-                unCheckRow(target, index);
-            }
-        });
-        // 绑定行双击事件
-        $(target).siblings(".kyDatagrid-body").find(".kyDatagrid-row").unbind("dblclick").dblclick(function (event) {
-            var rows = $.data(target, "kyDatagrid").rows;
-            var index = $(this).attr("index");
-            $.data(target, "kyDatagrid").options.onDblClickRow(index, rows[index]);
-        });
-        // 绑定 全选/取消全选 事件
-        if (options.enableChecked) {
-            $(target).siblings(".kyDatagrid-header").find("#kyDatagridAllCheckbox").unbind("click").click(function () {
-                // 单选时禁止全选按钮事件
-                if (options.singleSelect) {
-                    $(this).prop('checked', false);
-                } else {
-                    if (!$(this).prop("checked")) {
-                        unCheckAll(target);
-                    } else {
-                        checkAll(target);
-                    }
-                }
-            });
-        }
-
-        // resize 设置列宽
-        $(window).resize(function () {
-            setTableHeight(target);
-            setColWidth(target);
-        });
-    }
-
     // 设置表格高度自适应
     function setTableHeight(target) {
         var options = $(target).kyDatagrid('options');
-        if (options.fit) {
-            // 测试定位,目前只能在一个页面只有一个表格时生效。第二个表格的高度会变成0
-            var screenHeight = $(window).height();
+        // 是否启用 fit 适应屏幕高度
+        if (options.height || options.fit) {
+            // 获取屏幕高度，减去部分像素表示在屏幕下方留白，不会刚好到底部
+            var screenHeight = $(window).height() - 10;
             var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
-            $(target).parents('.kyDatagrid-wrap').css('height', screenHeight - offsetTop);
-            $(target).parents('.kyDatagrid-view').css('height', screenHeight - offsetTop - 31);
-            $(target).siblings(".kyDatagrid-header").css("height", 35 * getMaxDeepLength(options.columns));
-            $(target).siblings('.kyDatagrid-body').css('height', screenHeight - offsetTop - 35 * getMaxDeepLength(options.columns) - 31);
+
+            // 表格头部高度,减去一个像素去除边框
+            var headHeight = getThHeight(target) * getMaxDeepLength(options.columns);
+            // 分页高度
+            var paginationHeight = $(".pagination").height();
+
+            // 包裹层高度
+            var wrapHeight = options.height || screenHeight - offsetTop
+            wrapHeight = wrapHeight < (headHeight + paginationHeight) ? headHeight + paginationHeight : wrapHeight;
+            // 表格视图层高度
+            var viewHeight = wrapHeight;
+
+            // 是否分页，分页需要减去分页层的高度
+            if (options.pagination) {
+                viewHeight -= 31;
+            }
+            // 设置各容器层高度
+            $(target).parents('.kyDatagrid-wrap').css('height', wrapHeight);
+            $(target).parents('.kyDatagrid-view').css('height', viewHeight);
+            $(target).siblings(".kyDatagrid-head").css("height", headHeight);
+            $(target).siblings('.kyDatagrid-body').css('height', viewHeight - headHeight);
         }
     }
 
@@ -461,11 +449,11 @@
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var maxWidth = kyDatagridWrap.width();
 
-        var frozenColWidth = kyDatagridWrap.find(".kyDatagrid-header th.frozenCol").length;
+        var frozenColWidth = kyDatagridWrap.find(".kyDatagrid-head th.frozenCol").length;
 
-        kyDatagridWrap.find(".kyDatagrid-header").css("width", maxWidth);
+        kyDatagridWrap.find(".kyDatagrid-head").css("width", maxWidth);
         kyDatagridWrap.find(".kyDatagrid-body").css("width", maxWidth);
-        kyDatagridWrap.find(".kyDatagrid-header table").css("width", maxWidth - options.scrollBarWidth);
+        kyDatagridWrap.find(".kyDatagrid-head table").css("width", maxWidth - options.scrollBarWidth);
         kyDatagridWrap.find(".kyDatagrid-body table").css("width", maxWidth - options.scrollBarWidth);
 
         // TODO 这里36是每列宽度。后期需要修改。左侧做成frozenCol
@@ -509,7 +497,7 @@
         row.addClass("selected");
 
         var kyDatagridData = $.data(target, 'kyDatagrid');
-        var rows = kyDatagridData.rows || [];
+        var rows = kyDatagridData.data.rows || [];
         var selectedRows = kyDatagridData.selectedRows || [];
         var options = kyDatagridData.options;
         // endregion
@@ -542,7 +530,7 @@
             }
         }
         if (isAllChecked) {
-            $(target).siblings(".kyDatagrid-header").find("#kyDatagridAllCheckbox").prop("checked", true);
+            $(target).siblings(".kyDatagrid-head").find("#kyDatagridAllCheckbox").prop("checked", true);
             options.onSelectAll(rows);
         }
         // endregion
@@ -560,7 +548,7 @@
         row.removeClass("selected");
 
         var kyDatagridData = $.data(target, 'kyDatagrid');
-        var rows = kyDatagridData.rows == undefined ? [] : kyDatagridData.rows;
+        var rows = kyDatagridData.data.rows == undefined ? [] : kyDatagridData.data.rows;
         var selectedRows = kyDatagridData.selectedRows == undefined ? [] : kyDatagridData.selectedRows;
         var options = kyDatagridData.options;
 
@@ -569,7 +557,7 @@
             row.find(".kyDatagridCheckbox").prop("checked", false);
 
             // 设置表格的 全选 框为没有选中
-            $(target).siblings(".kyDatagrid-header").find("#kyDatagridAllCheckbox").prop("checked", false);
+            $(target).siblings(".kyDatagrid-head").find("#kyDatagridAllCheckbox").prop("checked", false);
         }
 
         var idField = options.idField;
@@ -587,17 +575,16 @@
 
     // 全选所有行
     function checkAll(target) {
-        var rows = $.data(target, "kyDatagrid").rows == undefined ? [] : $.data(target, "kyDatagrid").rows;
-        for (var i = 0;
-             i < rows.length;
-             i++) {
+        var rows = $.data(target, "kyDatagrid").data.rows == undefined ? [] : $.data(target, "kyDatagrid").data.rows;
+        // 遍历选中所有行
+        for (var i = 0; i < rows.length; i++) {
             checkRow(target, i);
         }
     }
 
     // 取消全选所有行
     function unCheckAll(target) {
-        var rows = $.data(target, "kyDatagrid").rows == undefined ? [] : $.data(target, "kyDatagrid").rows;
+        var rows = $.data(target, "kyDatagrid").data.rows == undefined ? [] : $.data(target, "kyDatagrid").data.rows;
         for (var i = 0; i < rows.length; i++) {
             unCheckRow(target, i);
         }
@@ -610,7 +597,7 @@
         // 选中行数不为 0 时获取第一行的 index 并返回该行数据
         if (selectedRows.length > 0) {
             // 获取全部行数据
-            var rows = $.data(target, "kyDatagrid").rows;
+            var rows = $.data(target, "kyDatagrid").data.rows;
             var firstIndex = parseInt($(selectedRows[0]).attr("index"));
             return rows[firstIndex];
         }
@@ -618,8 +605,8 @@
     }
 
     // 格式化返回的数据结果，标准格式为{total:100,rows:[]}
-    // 只返回数组格式时需要转换成标准格式  []  ->  {rows:[],total:array.length}
     function formatResult(options, data) {
+        // 只返回数组格式时需要转换成标准格式  []  ->  {rows:[],total:array.length}
         // 获取分页配置信息
         var pageSize = options.pageSize;
         var pageNo = options.pageNumber;
@@ -642,14 +629,6 @@
         }
         // 返回格式为 JSON 时，直接返回
         else if (data instanceof Object) {
-            var rows = data.rows;
-            if (options.pagination && rows.length > pageSize) {
-                // 遍历获取真实显示的记录
-                for (var i = 0; i < pageSize; i++) {
-                    realData.push(rows[i]);
-                }
-                data.rows = realData;
-            }
             return data;
         }
         // 其他的情况弹窗提示不支持
@@ -818,28 +797,6 @@
                 }
                 tbody.append(tr);
             }
-            // 输出空行
-            if (rows.length < options.pageSize) {
-                for (var i = 0; i < options.pageSize - rows.length; i++) {
-                    var tr = $("<tr>");
-                    // 是否显示行号
-                    if (options.rownumbers) {
-                        tr.append($("<td>"));
-                    }
-                    // 是否显示复选框
-                    if (options.enableChecked) {
-                        tr.append($("<td>"));
-                    }
-                    for (var j = 0; j < columns.length; j++) {
-                        var column = columns[j];
-                        if (column.hidden) {
-                        } else {
-                            tr.append($("<td>"));
-                        }
-                    }
-                    tbody.append(tr);
-                }
-            }
         }
         else {
             // 输出空行
@@ -866,6 +823,21 @@
         }
 
         return tbody[0].outerHTML;
+    }
+
+    // 输出样式表，更新单元格宽度
+    function writeStyleSheet(target, styleSheet) {
+        // 创建style样式表
+        $("style[kyDatagrid]").remove();
+
+        var style = ["<style type='text/css' kyDatagrid='true'>"];
+
+        // 遍历添加样式
+        for (var i = 0; i < styleSheet.length; i++) {
+            style.push(styleSheet[i]);
+        }
+        style.push("</style>");
+        $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap"));
     }
 
     // 递归获取columns的最深层数
@@ -957,20 +929,19 @@
         return realColumns;
     }
 
-    function writeStyleSheet(target, styleSheet) {
-        // 创建style样式表
-        $("style[kyDatagrid]").remove();
-
-        // style = $("<style type='text/css' kyDatagrid='true'></style>");
-        var style = ["<style type='text/css' kyDatagrid='true'>"];
-
-
-        // 遍历添加样式
-        for (var i = 0; i < styleSheet.length; i++) {
-            style.push(styleSheet[i]);
-        }
-        style.push("</style>");
-        $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap"));
+    // 获取单个TH的高度
+    function getThHeight(target) {
+        var minHeight = 9999;
+        $(target).siblings(".kyDatagrid-head").find("table th").each(function () {
+            var curHeight = $(this).outerHeight();
+            if ($(this).css("display") == "none") {
+                curHeight = 9999;
+            }
+            if (curHeight < minHeight) {
+                minHeight = curHeight;
+            }
+        });
+        return minHeight;
     }
 
 })(jQuery);
