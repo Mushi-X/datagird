@@ -60,7 +60,7 @@
         pageList: [10, 20, 30, 40, 50],
         maxPageLen: 10,
         emptyMsg: '记录为空!',
-        trAttr:function(tr){
+        trAttr: function (tr, row, index) {
         },
         onLoadSuccess: function (rows) {
         },
@@ -799,7 +799,7 @@
                     tr.append(td);
                 }
 
-                options.trAttr(tr);
+                options.trAttr(tr, row, i);
                 tbody.append(tr);
             }
         }

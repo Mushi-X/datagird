@@ -104,9 +104,10 @@
                     }
                 }
             ],
-            trAttr: function (tr) {
+            rowAttr: function (tr,row,index) {
                 tr.attr("msAttr", "456");
             },
+            tableCellAttr
             onLoadSuccess: function () {
             },
             onDblClickRow: function (index, row) {
