@@ -12,7 +12,9 @@ table { border-collapse: collapse; border-spacing: 0; }
 .clearfix { clear: both; font-size: 1px; }
 .left { float: left; }
 .right { float: right; }
-/** 表格样式,所有表格都是data-table的样式 */
+/**************************************/
+/* 表格样式,所有表格都是data-table的样式 */
+/**************************************/
 .data-table { width: 100%; border-collapse: collapse; border-spacing: 0; color: #76838f; }
 .data-table th { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; text-align: left; }
 .data-table th.sortable { cursor: pointer }
@@ -27,21 +29,20 @@ table { border-collapse: collapse; border-spacing: 0; }
 .data-table tr:hover { background: #f3f7f9; }
 .data-table td.center { text-align: center }
 .data-table .frozenCol { width: 36px; text-align: center; }
-.data-table .kyDatagrid-cell { padding: 0 6px; box-sizing: border-box; }
-/************/
-/** 分页样式 */
-/************/
+.data-table .kyDatagrid-cell { padding: 0 6px; }
+/***********/
+/* 分页样式 */
+/***********/
 .pagination { line-height: 30px; border-width: 1px 0 0 0; border-style: solid; border-color: #e4eaec; background: #f9fbfc; }
 .pagination .list-show { font-size: 14px; color: #666; padding-left: 6px; }
 .pagination .page-box { height: 30px; padding: 0 5px; }
-.pagination .page-box li { float: left; cursor: pointer; background-color: #f9f9f9; text-align: center; }
+.pagination .page-box li { float: left; cursor: pointer; background-color: #f9f9f9; text-align: center; height:30px; margin-right:10px;}
 .pagination .page-box li.pre a { display: block; border-width: 0 0 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 60px; font-size: 14px; color: #348cc7; }
 .pagination .page-box li.pre a.hui { color: #ddd }
 .pagination .page-box li.next a { display: block; border-width: 0 0 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 60px; font-size: 14px; color: #348cc7; }
 .pagination .page-box li.next a.hui { color: #ddd }
 .pagination .page-box li.num a { display: block; border-width: 0 1px 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 28px; font-size: 14px; color: #666; }
 .pagination .page-box li.num.active a { background-color: #6eaed9; color: #fff; }
-.show-g ul li { float: left; margin-right: 10px; font-size: 14px; color: #666; line-height: 30px; }
 .pagination .pagination-page-list { border: 1px solid #6eaed9; height: 20px; }
 .pagination .pagination-num { border: 1px solid #6eaed9; height: 18px; width: 30px; }
 .pagination .pagination-first { display: inline-block; background: url(img/leftt.png) no-repeat center; width: 20px; height: 20px; cursor: pointer; margin-top: 5px; }

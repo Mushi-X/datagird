@@ -23,6 +23,33 @@
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
 <div class="main">
     <table id="demoTable"></table>
+    <div style="margin-bottom:20px;"></div>
+    <table id="demoTable2">
+        <thead>
+        <tr>
+            <th colspan="2" field="col1" sortable="true">列一</th>
+            <th rowspan="2" field="col2">列二</th>
+            <th rowspan="2" field="col3">列三</th>
+            <th rowspan="2" field="col4">列四</th>
+        </tr>
+        <tr>
+            <th>列一</th>
+            <th>列二</th>
+        </tr>
+        </thead>
+        <tr>
+            <th>列一</th>
+            <th>列二</th>
+            <th>列三</th>
+            <th>列四</th>
+        </tr>
+        <tr>
+            <th>列一</th>
+            <th>列二</th>
+            <th>列三</th>
+            <th>列四</th>
+        </tr>
+    </table>
 </div>
 </body>
 
@@ -113,6 +140,7 @@
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
+        //$("#demoTable2").kyDatagrid();
     });
 
 

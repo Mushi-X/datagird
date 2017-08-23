@@ -32,6 +32,10 @@
                 $.extend(state.options, options);
             } else {      // 初始化
                 options = $.extend({}, $.fn.kyDatagrid.defaults, $.fn.kyDatagrid.parseOptions(this), options);
+
+                if (options.columns == undefined) {
+                    options.columns = parseColumnOpt(this);
+                }
                 // 设置表格配置
                 $.data(this, 'kyDatagrid', {options: options, data: {total: 0, rows: []}});
                 init(this);
@@ -135,6 +139,48 @@
     $.fn.kyDatagrid.parseOptions = function (target) {
         return {};
     };
+
+    // 解析html中table的列属性配置
+    function parseColumnOpt(target) {
+        var t = $(target);
+        // 表格中一行数据都没有时，直接返回空数组
+        if (t.find("tr").length == 0) {
+            return [];
+        }
+        var columns = [];
+        // 有thead才可以实现复杂表头
+        // TODO 解析已有表格的复杂表头
+        if (t.find("thead").length > 0) {
+            var trs = t.find("thead tr");
+            for (var i = 0; i < trs.length; i++) {
+                var tr = trs[i];
+                var ths = $(tr).find("th");
+                for (var j = 0; j < ths.length; j++) {
+                    var th = ths[j];
+                    column = {};
+                    column.title = $(th).html();
+                    column.field = $(th).attr("field");
+                    column.sortable = $(th).attr("sortable") == "true";
+                    columns.push(column);
+                }
+            }
+            return columns;
+        }
+        // 没有 thead 的时候直接获取表格第一行当做表头
+        else {
+            var tr = t.find("tr")[0];
+            var ths = $(tr).find("th");
+            for (var i = 0; i < ths.length; i++) {
+                var th = ths[i];
+                var column = {};
+                column.title = $(th).html();
+                column.field = $(th).attr("field");
+                column.sortable = $(th).attr("sortable") == "true";
+                columns.push(column);
+            }
+            return columns;
+        }
+    }
 
     // 初始化表格结构
     function init(target) {
@@ -306,7 +352,7 @@
             var pageSize = $(this).val();
             options.pageSize = pageSize;
             $.data(target, 'kyDatagrid').options = options;
-            reload(target);
+            changePage(target, 1);
         });
 
         pagination.append(pageBox);
@@ -371,8 +417,7 @@
     // 更新表格
     function reload(target, params) {
         // 获取表格基本配置
-        var state = $.data(target, 'kyDatagrid');
-        var options = state.options;
+        var options = $(target).kyDatagrid("options");
 
         // 传入参数不为空时,不保存原来的查询条件
         if (params != undefined && typeof params == "object") {
@@ -384,7 +429,7 @@
         if (options.pagination) {
             $.extend(queryParams, {page: options.pageNumber, rows: options.pageSize});
         }
-
+        var rows = [];
         // ajax加载数据
         // 返回结果 json 格式为 {total:0,rows:[]}
         // 其中 total 为总记录数 ， rows 为列表数组数据,里面每行json表示一行数据
@@ -395,6 +440,8 @@
             dataType: 'json',
             success: function (data) {
                 loadData(target, data);
+                // 回调 onloadSuccess 方法
+                options.onLoadSuccess(rows);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 loadData(target, []);
@@ -402,8 +449,7 @@
                 options.onLoadError();
             }
         });
-        // 回调 onloadSuccess 方法
-        options.onLoadSuccess(state.data.rows);
+
     }
 
     // 移除表格
@@ -786,6 +832,7 @@
                     if (column.hidden) {
                         td.css("display", "none");
                     }
+                    td.attr("field", column.field);
                     td.append(div);
 
                     switch (column.align) {
@@ -797,9 +844,6 @@
                             break;
                         case 'right':
                             td.css("text-align", "right");
-                            break;
-                        default:
-                            td.css("text-align", "left");
                             break;
                     }
                     tr.append(td);
@@ -839,7 +883,7 @@
     // 输出样式表，更新单元格宽度
     function writeStyleSheet(target, styleSheet) {
         // 创建style样式表
-        $("style[kyDatagrid]").remove();
+        $(target).parents(".kyDatagrid-wrap").find("style[kyDatagrid]").remove();
 
         var style = ["<style type='text/css' kyDatagrid='true'>"];
 
