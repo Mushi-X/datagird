@@ -430,25 +430,35 @@
             $.extend(queryParams, {page: options.pageNumber, rows: options.pageSize});
         }
         var rows = [];
-        // ajax加载数据
-        // 返回结果 json 格式为 {total:0,rows:[]}
-        // 其中 total 为总记录数 ， rows 为列表数组数据,里面每行json表示一行数据
-        $.ajax({
-            url: options.url,
-            type: options.method,
-            data: queryParams,
-            dataType: 'json',
-            success: function (data) {
-                loadData(target, data);
-                // 回调 onloadSuccess 方法
-                options.onLoadSuccess(rows);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                loadData(target, []);
-                // 回调 onLoadError 方法
-                options.onLoadError();
-            }
-        });
+        // 配置中的 url 不为 undefined 时进行异步请求
+        if (options.url != undefined) {
+            // ajax加载数据
+            // 返回结果 json 格式为 {total:0,rows:[]}
+            // 其中 total 为总记录数 ， rows 为列表数组数据,里面每行json表示一行数据
+            $.ajax({
+                url: options.url,
+                type: options.method,
+                data: queryParams,
+                dataType: 'json',
+                success: function (data) {
+                    loadData(target, data);
+                    // 回调 onloadSuccess 方法
+                    options.onLoadSuccess(rows);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    loadData(target, []);
+                    // 回调 onLoadError 方法
+                    options.onLoadError();
+                }
+            });
+        }
+        // options 中 url 为空时加载本地数据
+        else {
+            var data = options.data || [];
+            loadData(target, data);
+            // 回调 onloadSuccess 方法
+            options.onLoadSuccess(rows);
+        }
 
     }
 
