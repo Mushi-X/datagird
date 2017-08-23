@@ -132,6 +132,11 @@
             return jq.each(function () {
                 changePage(this, pageNo);
             })
+        },
+        hideColumn: function (jq, field) {
+            return jq.each(function () {
+                hideColumn(this, field);
+            })
         }
     };
 
@@ -226,6 +231,7 @@
         setTableHeight(target);
         // 设置列宽
         setColWidth(target);
+        return data;
     }
 
     // 绑定事件
@@ -441,9 +447,9 @@
                 data: queryParams,
                 dataType: 'json',
                 success: function (data) {
-                    loadData(target, data);
+                    data = loadData(target, data);
                     // 回调 onloadSuccess 方法
-                    options.onLoadSuccess(rows);
+                    options.onLoadSuccess(data.rows);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     loadData(target, []);
@@ -455,9 +461,9 @@
         // options 中 url 为空时加载本地数据
         else {
             var data = options.data || [];
-            loadData(target, data);
+            data = loadData(target, data);
             // 回调 onloadSuccess 方法
-            options.onLoadSuccess(rows);
+            options.onLoadSuccess(data.rows);
         }
 
     }
@@ -762,7 +768,7 @@
                     th.css("display", "none");
                 }
 
-                if (column.childColumns == undefined || column.childColumns.length <= 0) {
+                if (column.childColumns == undefined || getColspan(column.childColumns) <= 0) {
                     th.attr("rowspan", length - i);
                     // 下方没有元素时可以 设置对齐方式
                     var titleAlign = column.titleAlign || column.align;
@@ -802,6 +808,7 @@
     function writeTableBody(target, rows) {
         var options = $(target).kyDatagrid('options');
         var columns = getRealColumns(options.columns);
+        console.log(columns);
         var tbody = $("<tbody>");
         if (rows.length > 0) {
             // 遍历输出每行数据
@@ -951,7 +958,7 @@
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
             // 有子表头时不需要计算当前数量
-            if (column.childColumns && column.childColumns.length > 0) {
+            if (column.childColumns && getColspan(column.childColumns, length) > 0) {
                 length = getColspan(column.childColumns, length);
             }
             // 列不隐藏时宽度+1
@@ -983,7 +990,7 @@
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
             // 有子表头且长度不小于 0 时进行递归
-            if (column.childColumns && column.childColumns.length > 0) {
+            if (column.childColumns && getColspan(column.childColumns) > 0) {
                 realColumns = getRealColumns(column.childColumns, realColumns);
             }
             // 没有子表头时表示是最下面一行，直接放入 realColumns
@@ -1007,6 +1014,31 @@
             }
         });
         return minHeight;
+    }
+
+    // 隐藏指定列
+    function hideColumn(target, field) {
+        var state = $.data(target, 'kyDatagrid');
+        var options = state.options;
+        var columns = options.columns;
+        columns = updateColumnProp(columns, field, "hidden", true);
+        var headTable = state.headTable;
+        $(headTable).empty();
+        $(headTable).append(writeTableHead(target));
+        reload(target);
+    }
+
+    // 更新列配置中指定列的某个属性
+    function updateColumnProp(columns, field, attr, value) {
+        for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            if (field == column.field) {
+                column[attr] = value;
+            } else if (column.childColumns != undefined && column.childColumns.length > 0) {
+                column.childColumns = updateColumnProp(column.childColumns, field, attr, value);
+            }
+        }
+        return columns;
     }
 
 })(jQuery);

@@ -101,9 +101,9 @@
                         {
                             field: 'info', title: '基本信息', width: 100,
                             childColumns: [
-                                {field: 'unit', title: '单位', width: 100, align: 'center'},
-                                {field: 'num', title: '数量', width: 100, align: 'right', sortable: true},
-                                {field: 'price', title: '单价', width: 100, align: 'right', sortable: true}
+                                {field: 'unit', title: '单位', width: 100, align: 'center', hidden: true},
+                                {field: 'num', title: '数量', width: 100, align: 'right', sortable: true, hidden: true},
+                                {field: 'price', title: '单价', width: 100, align: 'right', sortable: true, hidden: true}
                             ]
                         },
                         {field: 'value1', title: '高级属性一', width: 100, sortable: true},
@@ -134,13 +134,13 @@
             trAttr: function (tr, row, index) {
             },
             onLoadSuccess: function (rows) {
-                console.log(rows);
+                //console.log(rows);
             },
             onDblClickRow: function (index, row) {
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
-        //$("#demoTable2").kyDatagrid();
+        $("#demoTable2").kyDatagrid();
     });
 
 
