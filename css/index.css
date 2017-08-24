@@ -16,19 +16,19 @@ table { border-collapse: collapse; border-spacing: 0; }
 /* 表格样式,所有表格都是data-table的样式 */
 /**************************************/
 .data-table { width: 100%; border-collapse: collapse; border-spacing: 0; color: #76838f; }
-.data-table th { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; text-align: left; }
+.data-table th { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; background-color: #f9fbfc; font-size: 14px; font-weight: 500; color: #526069; vertical-align: middle; text-align: left; height: 35px; }
 .data-table th.sortable { cursor: pointer }
 .data-table th.sortable .kyDatagrid-sort-icon { background: url("img/arrow.png") no-repeat left center; padding-right: 12px; }
 .data-table th.up .kyDatagrid-sort-icon { background: url("img/arrow-up.png") no-repeat left center; }
 .data-table th.down .kyDatagrid-sort-icon { background: url("img/arrow-down.png") no-repeat left center; }
-.data-table td { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; height: 36px; font-size: 14px; vertical-align: middle; }
+.data-table td { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; height: 35px; font-size: 14px; vertical-align: middle; }
+.data-table td.rownumber { background-color: #f9fbfc; }
 .data-table tr { height: 35px; }
-.data-table tr.selected, .data-table tr.selected:hover { background: #ffe48d; }
-.data-table tr:nth-child(odd) { background: #fbfdfd; }
-.data-table tr:nth-child(odd).selected, .data-table tr:nth-child(odd).selected:hover { background: #ffe48d; }
-.data-table tr:hover { background: #f3f7f9; }
+.data-table tr:nth-child(even) {background: #fbfdfd}
+.data-table tr:nth-child(odd) {background: #ffffff}
+.data-table tr.selected { background-color: #ffe48d; }
 .data-table td.center { text-align: center }
-.data-table .frozenCol { width: 36px; text-align: center; }
+.data-table .frozenCol { width: 35px; text-align: center; }
 .data-table .kyDatagrid-cell { padding: 0 6px; }
 /***********/
 /* 分页样式 */
@@ -36,13 +36,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 .pagination { line-height: 30px; border-width: 1px 0 0 0; border-style: solid; border-color: #e4eaec; background: #f9fbfc; }
 .pagination .list-show { font-size: 14px; color: #666; padding-left: 6px; }
 .pagination .page-box { height: 30px; padding: 0 5px; }
-.pagination .page-box li { float: left; cursor: pointer; background-color: #f9f9f9; text-align: center; height:30px; margin-right:10px;}
-.pagination .page-box li.pre a { display: block; border-width: 0 0 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 60px; font-size: 14px; color: #348cc7; }
-.pagination .page-box li.pre a.hui { color: #ddd }
-.pagination .page-box li.next a { display: block; border-width: 0 0 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 60px; font-size: 14px; color: #348cc7; }
-.pagination .page-box li.next a.hui { color: #ddd }
-.pagination .page-box li.num a { display: block; border-width: 0 1px 0 1px; border-style: solid; border-color: #e4eaec; height: 30px; line-height: 30px; width: 28px; font-size: 14px; color: #666; }
-.pagination .page-box li.num.active a { background-color: #6eaed9; color: #fff; }
+.pagination .page-box li { float: left; cursor: pointer; background-color: #f9f9f9; text-align: center; height: 30px; margin-right: 10px; }
 .pagination .pagination-page-list { border: 1px solid #6eaed9; height: 20px; }
 .pagination .pagination-num { border: 1px solid #6eaed9; height: 18px; width: 30px; }
 .pagination .pagination-first { display: inline-block; background: url(img/leftt.png) no-repeat center; width: 20px; height: 20px; cursor: pointer; margin-top: 5px; }
@@ -60,12 +54,12 @@ table { border-collapse: collapse; border-spacing: 0; }
 /* kyDatagrid css */
 /******************/
 .kyDatagrid-wrap { border: 1px solid #e4eaec; }
-.kyDatagrid-view { }
-.kyDatagrid-head { background: #f9fbfc; }
-.kyDatagrid-body { overflow-y: auto; overflow-x: hidden; border-top: 1px solid #e4eaec }
-.kyDatagrid-view-left, .kyDatagrid-view-right { position: absolute; overflow: hidden; top: 0 }
-.kyDatagrid-view-left { left: 0 }
-.kyDatagrid-view-right { right: 0; }
+.kyDatagrid-view1 { float: left; overflow: hidden }
+.kyDatagrid-view2 { float: right; overflow-x: auto; overflow-y: hidden; }
+.kyDatagrid-view1 .kyDatagrid-head { background: #f9fbfc; }
+.kyDatagrid-view1 .kyDatagrid-body { overflow: hidden; border-top: 1px solid #e4eaec; }
+.kyDatagrid-view2 .kyDatagrid-head { background: #f9fbfc; }
+.kyDatagrid-view2 .kyDatagrid-body { overflow-y: auto; overflow-x: hidden; border-top: 1px solid #e4eaec; }
 .kyDatagrid-cell { white-space: nowrap; word-wrap: normal; overflow: hidden; }
 /***************************/
 /* webkit 浏览器的滚动条美化 */

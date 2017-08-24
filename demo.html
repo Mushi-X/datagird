@@ -51,10 +51,16 @@
         </tr>
     </table>
 </div>
+
+<div id="container">
+    <div id="menu">456456</div>
+    123123
+</div>
 </body>
 
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="js/kyDatagrid.js" type="text/javascript"></script>
+
 
 <script type="text/javascript">
     $(function () {
@@ -70,52 +76,56 @@
             fit: true,
             enableChecked: true,
             pageNumber: 1,
-            scrollBarWidth: -1,
+            scrollBarWidth: 0,
             emptyMsg: '这里没有数据！',
             pageSize: 10,
             pageList: [10, 20, 30, 40],
-            columns: [
-                {field: 'id', title: 'ID', width: 100, hidden: true},
-                {
-                    field: 'name', title: '商品名称', width: 100, sortable: true,
-                    formatter: function (val, row, index) {
-                        return "<a href='javascript:void(0)'>" + val + "</a>";
-                    }
-                },
-                {
-                    field: 'status', title: '商品状态', width: 100, align: 'center',
-                    formatter: function (val, row, index) {
-                        switch (val) {
-                            case 1 :
-                                return "上架";
-                                break;
-                            case 2 :
-                                return "缺货";
-                                break;
+            frozenColumns: [
+                {field: 'id', title: 'ID', width: 20, hidden: true},
+                {fiew:'productInfo',title:'商品信息',childColumns:[
+                    {
+                        field: 'name', title: '商品名称', width: 100, sortable: true,
+                        formatter: function (val, row, index) {
+                            return "<a href='javascript:void(0)'>" + val + "</a>";
+                        }
+                    },
+                    {
+                        field: 'status', title: '商品状态', width: 100, align: 'center',
+                        formatter: function (val, row, index) {
+                            switch (val) {
+                                case 1 :
+                                    return "上架";
+                                    break;
+                                case 2 :
+                                    return "缺货";
+                                    break;
+                            }
                         }
                     }
-                },
+                ]}
+            ],
+            columns: [
                 {
                     field: 'productValue', title: '商品属性', width: 100,
                     childColumns: [
                         {
                             field: 'info', title: '基本信息', width: 100,
                             childColumns: [
-                                {field: 'unit', title: '单位', width: 100, align: 'center', hidden: true},
-                                {field: 'num', title: '数量', width: 100, align: 'right', sortable: true, hidden: true},
+                                {field: 'unit', title: '单位', width: 100, align: 'center',},
+                                {field: 'num', title: '数量', width: 100, align: 'right', sortable: true},
                                 {field: 'price', title: '单价', width: 100, align: 'right', sortable: true, hidden: true}
                             ]
                         },
                         {field: 'value1', title: '高级属性一', width: 100, sortable: true},
-                        {field: 'value2', title: '高级属性二', width: 100, sortable: true},
-                        {field: 'value3', title: '高级属性三', width: 100, sortable: true},
+                        {field: 'value2', title: '高级属性二', width: 100, sortable: true, hidden: true},
+                        {field: 'value3', title: '高级属性三', width: 100, sortable: true, hidden: true},
                         {field: 'value4', title: '高级属性四', width: 100, sortable: true, hidden: true}
                     ]
                 },
                 {
                     field: 'stock', title: '库存信息', width: 100,
                     childColumns: [
-                        {field: 'total', title: '总数', width: 100, sortable: true, align: 'right'},
+                        {field: 'total', title: '总数', width: 100, sortable: true, align: 'right', hidden: true},
                         {field: 'sell', title: '已售', width: 100, sortable: true, align: 'right'},
                         {field: 'left', title: '剩余', width: 100, sortable: true, align: 'right'}
                     ]
