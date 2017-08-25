@@ -24,8 +24,8 @@ table { border-collapse: collapse; border-spacing: 0; }
 .data-table td { border-width: 0 1px 1px 0; border-style: solid; border-color: #e4eaec; height: 35px; font-size: 14px; vertical-align: middle; }
 .data-table td.rownumber { background-color: #f9fbfc; }
 .data-table tr { height: 35px; }
-.data-table tr:nth-child(even) {background: #fbfdfd}
-.data-table tr:nth-child(odd) {background: #ffffff}
+.data-table tr:nth-child(even) { background: #fbfdfd }
+.data-table tr:nth-child(odd) { background: #ffffff }
 .data-table tr.hover { background-color: #f3f7f9; }
 .data-table tr.selected { background-color: #ffe48d; }
 .data-table td.center { text-align: center }
@@ -56,12 +56,14 @@ table { border-collapse: collapse; border-spacing: 0; }
 /******************/
 .kyDatagrid-wrap { border: 1px solid #e4eaec; }
 .kyDatagrid-view { position: relative; overflow: hidden }
-.kyDatagrid-view1 { position: absolute; left: 0; overflow: hidden }
-.kyDatagrid-view2 { position: absolute; right: 0; overflow-x: auto; overflow-y: hidden; }
-.kyDatagrid-view1 .kyDatagrid-head { background: #f9fbfc; }
-.kyDatagrid-view1 .kyDatagrid-body { overflow: hidden; border-top: 1px solid #e4eaec; }
-.kyDatagrid-view2 .kyDatagrid-head { background: #f9fbfc; }
-.kyDatagrid-view2 .kyDatagrid-body { overflow-y: auto; overflow-x: hidden; border-top: 1px solid #e4eaec; }
+.kyDatagrid-view-left { position: absolute; left: 0; overflow: hidden }
+.kyDatagrid-view-left .kyDatagrid-head { background: #f9fbfc; overflow: hidden; }
+.kyDatagrid-view-left .kyDatagrid-body { overflow: hidden; border-top: 1px solid #e4eaec; }
+.kyDatagrid-view-left .kyDatagrid-body-inner { height: 10000px; }
+.kyDatagrid-view-right { position: absolute; right: 0; overflow: hidden; }
+.kyDatagrid-view-right .kyDatagrid-head { background: #f9fbfc; overflow: hidden; }
+.kyDatagrid-view-right .kyDatagrid-head-inner { width: 10000px; }
+.kyDatagrid-view-right .kyDatagrid-body { overflow: auto; border-top: 1px solid #e4eaec; }
 .kyDatagrid-cell { white-space: nowrap; word-wrap: normal; overflow: hidden; }
 /***************************/
 /* webkit 浏览器的滚动条美化 */

@@ -207,23 +207,31 @@
         // 获取外层各对象
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var kyDatagridView = kyDatagridWrap.find(".kyDatagrid-view");
-        kyDatagridView.append("<div class='kyDatagrid-view1'>").append("<div class='kyDatagrid-view2'>");
-        var kyDatagridView1 = kyDatagridWrap.find(".kyDatagrid-view1");
-        var kyDatagridView2 = kyDatagridWrap.find(".kyDatagrid-view2");
+        kyDatagridView.append("<div class='kyDatagrid-view-left'>")
+            .append("<div class='kyDatagrid-view-right'>")
+            .append("<div class='kyDatagrid-view-empty'>");
+        var kyDatagridView1 = kyDatagridWrap.find(".kyDatagrid-view-left");
+        var kyDatagridView2 = kyDatagridWrap.find(".kyDatagrid-view-right");
         // 左侧固定列初始化
         kyDatagridView1.append("<div class='kyDatagrid-head'>").append("<div class='kyDatagrid-body'>");
         kyDatagridView1.find(".kyDatagrid-head").append("<table class='data-table'>");
-        kyDatagridView1.find(".kyDatagrid-body").append("<table class='data-table'>");
+        kyDatagridView1.find(".kyDatagrid-body").append("<div class='kyDatagrid-body-inner'><table class='data-table'></table></div>");
         kyDatagridView1.find(".kyDatagrid-head table").append(writeTableHead(target, options.frozenColumns, true));
         // 右侧表格主体列初始化
         kyDatagridView2.append("<div class='kyDatagrid-head'>").append("<div class='kyDatagrid-body'>");
-        kyDatagridView2.find(".kyDatagrid-head").append("<table class='data-table'>");
-        kyDatagridView2.find(".kyDatagrid-head table").append(writeTableHead(target, options.columns));
+        kyDatagridView2.find(".kyDatagrid-head").append("<div class='kyDatagrid-head-inner'><table class='data-table'></table></div>");
         kyDatagridView2.find(".kyDatagrid-body").append("<table class='data-table'>");
+        kyDatagridView2.find(".kyDatagrid-head table").append(writeTableHead(target, options.columns));
 
-        $.data(target, "kyDatagrid").headTable = kyDatagridView2.find(".kyDatagrid-head table");
-        $.data(target, "kyDatagrid").bodyTable = kyDatagridView2.find(".kyDatagrid-body table");
-
+        // 存放datagrid中使用到的容器
+        var container = {};
+        container.leftView = kyDatagridView1;
+        container.leftHead = kyDatagridView1.find(".kyDatagrid-head");
+        container.leftBody = kyDatagridView1.find(".kyDatagrid-body");
+        container.rightView = kyDatagridView2;
+        container.rightHead = kyDatagridView2.find(".kyDatagrid-head");
+        container.rightBody = kyDatagridView2.find(".kyDatagrid-body");
+        $.data(target, "kyDatagrid").container = container;
 
         kyDatagridView.contextmenu(function (e) {
             // 获取当前点击元素
@@ -237,8 +245,8 @@
         var options = $(target).kyDatagrid('options');
         var data = formatResult(options, data);
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
-        kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-body table").empty().append(writeTableBody(target, data.rows, true));
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-body table").empty().append(writeTableBody(target, data.rows));
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body table").empty().append(writeTableBody(target, data.rows, true));
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body table").empty().append(writeTableBody(target, data.rows));
 
         // 更新表格配置
         var kyDatagridData = $.data(target, 'kyDatagrid');
@@ -256,6 +264,14 @@
         // 设置列宽
         setColWidth(target);
         return data;
+    }
+
+    function syncScroll() {
+        var mainBody = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body");
+        var scrollHeight = mainBody.scrollTop();
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
+        var scrollLeft = mainBody.scrollLeft();
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
     }
 
     // 绑定事件
@@ -284,21 +300,21 @@
         });
 
         // 绑定同步滚动事件
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-body").scroll(function (e) {
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scroll(function (e) {
             var scrollHeight = $(this).scrollTop();
-            kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-body").scrollTop(scrollHeight);
+            kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
+            var scrollLeft = $(this).scrollLeft();
+            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
         });
 
         // 绑定hover事件
-        kyDatagridWrap.find(".kyDatagrid-row").hover(
-            function () {
-                var index = $(this).attr("index");
-                $(target).parents(".kyDatagrid-wrap").find("tr#kyDatagrid-row-" + index).addClass("hover");
-            }, function () {
-                var index = $(this).attr("index");
-                $(target).parents(".kyDatagrid-wrap").find("tr#kyDatagrid-row-" + index).removeClass("hover");
-            }
-        );
+        kyDatagridWrap.find(".kyDatagrid-row").hover(function () {
+            var index = $(this).attr("index");
+            $(target).parents(".kyDatagrid-wrap").find("tr#kyDatagrid-row-" + index).addClass("hover");
+        }, function () {
+            var index = $(this).attr("index");
+            $(target).parents(".kyDatagrid-wrap").find("tr#kyDatagrid-row-" + index).removeClass("hover");
+        });
 
         // 绑定行单击事件
         kyDatagridWrap.find(".kyDatagrid-row").unbind("click").click(function (event) {
@@ -351,6 +367,14 @@
             setTableHeight(target);
             setColWidth(target);
         });
+
+        // 定时同步滚动条距离，兼容 IE 下可能会出现 resize 后滚动条位置错误的 BUG
+        window.setInterval(function () {
+            var scrollHeight = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollTop();
+            kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
+            var scrollLeft = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollLeft();
+            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
+        }, 100);
     }
 
     // 输出分页
@@ -527,7 +551,7 @@
         // 是否启用 fit 适应屏幕高度
         if (options.height || options.fit) {
             // 获取屏幕高度，减去部分像素表示在屏幕下方留白，不会刚好到底部
-            var screenHeight = $(window).height() - 10;
+            var screenHeight = $(window).height() - options.scrollBarWidth - 10;
             var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
 
             // 表格头部高度
@@ -538,6 +562,7 @@
             // 包裹层高度
             var wrapHeight = options.height || screenHeight - offsetTop
             wrapHeight = wrapHeight < (headHeight + paginationHeight) ? headHeight + paginationHeight : wrapHeight;
+            wrapHeight += options.scrollBarWidth;
             // 表格视图层高度
             var viewHeight = wrapHeight;
 
@@ -545,13 +570,17 @@
             if (options.pagination) {
                 viewHeight -= 31;
             }
+
+            var tableHeight = kyDatagridWrap.find(".kyDatagrid-body-inner table").height();
             // 设置各容器层高度
             kyDatagridWrap.css('height', wrapHeight);
-            kyDatagridWrap.find('.kyDatagrid-view').css('height', viewHeight + options.scrollBarWidth);
-            kyDatagridWrap.find('.kyDatagrid-view1').css('height', viewHeight + options.scrollBarWidth);
-            kyDatagridWrap.find('.kyDatagrid-view2').css('height', viewHeight + options.scrollBarWidth);
+            kyDatagridWrap.find('.kyDatagrid-view').css('height', viewHeight);
+            kyDatagridWrap.find('.kyDatagrid-view-left').css('height', viewHeight);
+            kyDatagridWrap.find('.kyDatagrid-view-right').css('height', viewHeight);
             kyDatagridWrap.find(".kyDatagrid-head").css("height", headHeight);
-            kyDatagridWrap.find('.kyDatagrid-body').css('height', viewHeight - headHeight);
+            kyDatagridWrap.find('.kyDatagrid-view-left .kyDatagrid-body').css('height', viewHeight - headHeight);
+            kyDatagridWrap.find('.kyDatagrid-view-left .kyDatagrid-body-inner').css('height', tableHeight + options.scrollBarWidth);
+            kyDatagridWrap.find('.kyDatagrid-view-right .kyDatagrid-body').css('height', viewHeight - headHeight);
         }
     }
 
@@ -593,11 +622,11 @@
         }
 
         // 设置左侧固定列部分容器和表格的宽度
-        kyDatagridWrap.find(".kyDatagrid-view1").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-head").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-body").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-head table").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view1 .kyDatagrid-body table").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head table").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body table").css("width", leftViewWidth);
 
         // endregion
 
@@ -611,11 +640,12 @@
         var rightTableWidth = rightViewWidth > tempTableWidth ? rightViewWidth : tempTableWidth;
         rightTableWidth = rightTableWidth - options.scrollBarWidth;
         // 设置右侧表格主体部分容器和表格的宽度
-        kyDatagridWrap.find(".kyDatagrid-view2").css("width", rightViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-head").css("width", rightTableWidth + options.scrollBarWidth);
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-body").css("width", rightTableWidth + options.scrollBarWidth);
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-head table").css("width", rightTableWidth);
-        kyDatagridWrap.find(".kyDatagrid-view2 .kyDatagrid-body table").css("width", rightTableWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right").css("width", rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").css("width", rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").css("width", rightViewWidth + options.scrollBarWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").css("width", rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head table").css("width", rightTableWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body table").css("width", rightTableWidth);
 
         // 遍历设置每列宽度
         for (var i = 0; i < realColumns.length; i++) {
@@ -965,29 +995,6 @@
                 options.trAttr(tr, row, i);
                 tbody.append(tr);
             }
-        }
-        else {
-            // 输出空行
-            var tr = $("<tr>");
-            var emptyTd = $("<td>");
-            // 获取跨列数量
-            var colspan = getColspan(columns);
-            // 是否显示行号
-            if (options.rownumbers) {
-                colspan++;
-            }
-            // 是否启用复选框
-            if (options.enableChecked) {
-                colspan++;
-            }
-            emptyTd.attr("colspan", colspan).css("text-align", "center");
-
-            var div = $("<div>");
-            div.addClass("kyDatagrid-cell");
-            div.html(options.emptyMsg);
-            emptyTd.append(div);
-            tr.append(emptyTd);
-            tbody.append(tr);
         }
 
         return tbody[0].outerHTML;
