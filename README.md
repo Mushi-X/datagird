@@ -6,7 +6,7 @@
 
 兼容IE8+、Chrome、Firfox等主流浏览器
 
-详细使用点击[这里](http://192.168.0.229/kingyea/js-plugin-kyDatagrid/wikis/home)
+详细使用点击[这里](https://github.com/Mushi-X/datagird/wiki)
 
 ### 演示页面说明
 
