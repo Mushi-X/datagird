@@ -294,10 +294,7 @@
 
         // 绑定同步滚动事件
         kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scroll(function (e) {
-            var scrollHeight = $(this).scrollTop();
-            kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
-            var scrollLeft = $(this).scrollLeft();
-            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
+            syncScoll();
         });
 
         // 绑定hover事件
@@ -359,15 +356,19 @@
         $(window).resize(function () {
             setTableHeight(target);
             setColWidth(target);
+            syncScoll(target);
         });
 
-        // 定时同步滚动条距离，兼容 IE 下可能会出现 resize 后滚动条位置错误的 BUG
-        window.setInterval(function () {
-            var scrollHeight = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollTop();
-            kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
-            var scrollLeft = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollLeft();
-            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
-        }, 100);
+    }
+
+    // 同步滚动条距离
+    function syncScoll() {
+        var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
+        // 同步滚动条距离，兼容 IE 下可能会出现 resize 后滚动条位置错误的 BUG
+        var scrollHeight = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollTop();
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
+        var scrollLeft = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollLeft();
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
     }
 
     // 输出分页
