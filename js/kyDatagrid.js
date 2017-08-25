@@ -294,7 +294,7 @@
 
         // 绑定同步滚动事件
         kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scroll(function (e) {
-            syncScoll();
+            syncScoll(target);
         });
 
         // 绑定hover事件
@@ -362,7 +362,7 @@
     }
 
     // 同步滚动条距离
-    function syncScoll() {
+    function syncScoll(target) {
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         // 同步滚动条距离，兼容 IE 下可能会出现 resize 后滚动条位置错误的 BUG
         var scrollHeight = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").scrollTop();
