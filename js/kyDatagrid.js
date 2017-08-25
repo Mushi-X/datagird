@@ -233,6 +233,7 @@
         container.rightBody = kyDatagridView2.find(".kyDatagrid-body");
         $.data(target, "kyDatagrid").container = container;
 
+        // TODO 右键菜单
         kyDatagridView.contextmenu(function (e) {
             // 获取当前点击元素
             var targetElement = e.target;
@@ -264,14 +265,6 @@
         // 设置列宽
         setColWidth(target);
         return data;
-    }
-
-    function syncScroll() {
-        var mainBody = kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body");
-        var scrollHeight = mainBody.scrollTop();
-        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").scrollTop(scrollHeight);
-        var scrollLeft = mainBody.scrollLeft();
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").scrollLeft(scrollLeft);
     }
 
     // 绑定事件
