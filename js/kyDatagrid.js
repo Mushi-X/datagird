@@ -590,12 +590,11 @@
         maxWidth = kyDatagridWrap.parent().width();
         kyDatagridWrap.css("width", maxWidth);
 
-
         // region // 左侧固定列宽度设置
         // 获取左侧固定列
         var frozenColumns = getVisibleColumns(getRealColumns(options.frozenColumns));
         var frozenColTotalWidth = getTotalWidth(frozenColumns);
-        var leftViewWidth = 100 * frozenColumns.length;
+        var leftViewWidth = frozenColTotalWidth;
 
         // 遍历设置每列宽度
         for (var i = 0; i < frozenColumns.length; i++) {
@@ -630,8 +629,8 @@
         var totalWidth = getTotalWidth(realColumns);
         var rightViewWidth = maxWidth - leftViewWidth;
         // 右侧表格的宽度，每列最少有100像素的宽度
-        var tempTableWidth = realColumns.length * 100;
-        var rightTableWidth = rightViewWidth > tempTableWidth ? rightViewWidth : tempTableWidth;
+        var columnsMinWidth = totalWidth;
+        var rightTableWidth = rightViewWidth > columnsMinWidth ? rightViewWidth : columnsMinWidth;
         rightTableWidth = rightTableWidth - options.scrollBarWidth;
         // 设置右侧表格主体部分容器和表格的宽度
         kyDatagridWrap.find(".kyDatagrid-view-right").css("width", rightViewWidth);

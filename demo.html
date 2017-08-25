@@ -22,7 +22,7 @@
 <h1>kyDatagrid Demo</h1>
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
 <table id="demoTable"></table>
-<div style="height: 19000px;"></div>
+
 </body>
 
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -53,7 +53,7 @@
                 {
                     fiew: 'productInfo', title: '商品信息', childColumns: [
                     {
-                        field: 'name', title: '商品名称', width: 100, sortable: true,
+                        field: 'name', title: '商品名称', width: 60, sortable: true,
                         formatter: function (val, row, index) {
                             return "<a href='javascript:void(0)'>" + val + "</a>";
                         }
