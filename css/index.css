@@ -26,6 +26,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 .data-table tr { height: 35px; }
 .data-table tr:nth-child(even) {background: #fbfdfd}
 .data-table tr:nth-child(odd) {background: #ffffff}
+.data-table tr.hover { background-color: #f3f7f9; }
 .data-table tr.selected { background-color: #ffe48d; }
 .data-table td.center { text-align: center }
 .data-table .frozenCol { width: 35px; text-align: center; }
@@ -54,8 +55,9 @@ table { border-collapse: collapse; border-spacing: 0; }
 /* kyDatagrid css */
 /******************/
 .kyDatagrid-wrap { border: 1px solid #e4eaec; }
-.kyDatagrid-view1 { float: left; overflow: hidden }
-.kyDatagrid-view2 { float: right; overflow-x: auto; overflow-y: hidden; }
+.kyDatagrid-view { position: relative; overflow: hidden }
+.kyDatagrid-view1 { position: absolute; left: 0; overflow: hidden }
+.kyDatagrid-view2 { position: absolute; right: 0; overflow-x: auto; overflow-y: hidden; }
 .kyDatagrid-view1 .kyDatagrid-head { background: #f9fbfc; }
 .kyDatagrid-view1 .kyDatagrid-body { overflow: hidden; border-top: 1px solid #e4eaec; }
 .kyDatagrid-view2 .kyDatagrid-head { background: #f9fbfc; }

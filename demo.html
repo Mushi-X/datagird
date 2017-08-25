@@ -21,41 +21,8 @@
 <body>
 <h1>kyDatagrid Demo</h1>
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
-<div class="main">
-    <table id="demoTable"></table>
-    <div style="margin-bottom:20px;"></div>
-    <table id="demoTable2">
-        <thead>
-        <tr>
-            <th colspan="2" field="col1" sortable="true">列一</th>
-            <th rowspan="2" field="col2">列二</th>
-            <th rowspan="2" field="col3">列三</th>
-            <th rowspan="2" field="col4">列四</th>
-        </tr>
-        <tr>
-            <th>列一</th>
-            <th>列二</th>
-        </tr>
-        </thead>
-        <tr>
-            <th>列一</th>
-            <th>列二</th>
-            <th>列三</th>
-            <th>列四</th>
-        </tr>
-        <tr>
-            <th>列一</th>
-            <th>列二</th>
-            <th>列三</th>
-            <th>列四</th>
-        </tr>
-    </table>
-</div>
-
-<div id="container">
-    <div id="menu">456456</div>
-    123123
-</div>
+<table id="demoTable"></table>
+<div style="height: 19000px;"></div>
 </body>
 
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -68,6 +35,7 @@
             title: "办公设备",
             method: "get",
             url: 'data.json',
+            data:[],
             border: true,
             idField: 'id',
             pagination: true,
@@ -82,7 +50,8 @@
             pageList: [10, 20, 30, 40],
             frozenColumns: [
                 {field: 'id', title: 'ID', width: 20, hidden: true},
-                {fiew:'productInfo',title:'商品信息',childColumns:[
+                {
+                    fiew: 'productInfo', title: '商品信息', childColumns: [
                     {
                         field: 'name', title: '商品名称', width: 100, sortable: true,
                         formatter: function (val, row, index) {
@@ -90,7 +59,7 @@
                         }
                     },
                     {
-                        field: 'status', title: '商品状态', width: 100, align: 'center',
+                        field: 'status', title: '商品状态', width: 60, align: 'center',
                         formatter: function (val, row, index) {
                             switch (val) {
                                 case 1 :
@@ -102,7 +71,8 @@
                             }
                         }
                     }
-                ]}
+                ]
+                }
             ],
             columns: [
                 {
@@ -150,7 +120,6 @@
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
-        $("#demoTable2").kyDatagrid();
     });
 
 
