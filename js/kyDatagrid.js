@@ -226,6 +226,7 @@
         // 获取外层各对象
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var kyDatagridView = kyDatagridWrap.find(".kyDatagrid-view");
+        kyDatagridWrap.addClass("kyDatagrid-table-" + $(target).attr("id"));
         kyDatagridView.append("<div class='kyDatagrid-view-left'>")
             .append("<div class='kyDatagrid-view-right'>")
             .append("<div class='kyDatagrid-view-empty'>");
@@ -1016,12 +1017,12 @@
         // 创建style样式表
         $(target).parents(".kyDatagrid-wrap").find(".kyDatagrid-view style[kyDatagrid]").remove();
 
-        var style = ["<style type='text/css' kyDatagrid='true'>"];
+        var style = ["<style type='text/css' kyDatagrid='true' scoped>"];
 
         // 遍历添加样式
         for (var i = 0; i < styleSheet.length; i++) {
             // 补充表格 ID 前缀，防止多个表格有相同列名称时产生样式冲突
-            style.push("#" + $(target).attr("id") + " " + styleSheet[i]);
+            style.push(".kyDatagrid-table-" + $(target).attr("id") + " " + styleSheet[i]);
         }
         style.push("</style>");
         $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap .kyDatagrid-view"));
