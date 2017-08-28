@@ -190,7 +190,7 @@
             // endregion
 
             // region // 然后将 N 重数组转换成一层数组
-            columns = resolveColumns([], tempColumns);
+            columns = resolveColumns(tempColumns);
 
             // endregion
 
@@ -1068,21 +1068,34 @@
     }
 
     // 解析列配置，将多层数组转换成一层数组
-    function resolveColumns(columns, rows, index, lenght) {
-        columns = columns || [];
-        index = index || 0;
-
+    function resolveColumns(rows, index, offset, length, columns) {
+        // rows 为表格所有行的配置
+        // index 为当前所在行的下标
+        // offset 为偏移量，表示 当前行 从 第几列 开始
+        // length 为 当前行 的 列 个数
+        columns = columns || [];            //
+        index = index || 0;                 // 当前行下标
+        offset = offset || 0;
+        length = length || rows.length;
+        var curOffset = offset;
+        // 获取当前行数据
         var curRows = rows[index];
-        for (var i = 0; i < curRows.length; i++) {
-            var column = curRows[i];
-            //
-            if (column.colspan && column.colspan > 0 && index + 1 < rows.length) {
-                column.childColumns = resolveColumns([], rows, index + 1);
+        // 遍历当前行的所有列
+        for (var i = 0; i < length; i++, offset++) {
+            var column = curRows[offset];
+            // 是否跨列
+            var colspan = 0;
+            if (column.colspan != undefined) {
+                colspan = parseInt(column.colspan);
+            }
+            // 跨列时表示有子表头
+            if (colspan > 0 && (index + 1) < rows.length) {
+                column.childColumns = resolveColumns(rows, index + 1, curOffset, colspan);
+                curOffset += colspan;
             }
             columns.push(column);
         }
 
-        console.log("in function", index, columns);
         return columns;
     }
 

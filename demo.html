@@ -15,8 +15,7 @@
         h3 a { font-size: 16px; text-align: center; margin: 10px 0; }
         .btn-blue { display: inline-block; background: none; border: 1px solid #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #62a8ea; font-size: 12px; }
         .btn-blue:hover { display: inline-block; background-color: #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #fff; font-size: 12px; }
-
-        .kyDatagrid-wrap{ margin-bottom:10px;}
+        .kyDatagrid-wrap { margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -26,20 +25,20 @@
 <table id="localTable">
     <thead>
     <tr>
-        <th rowspan="3">第一列</th>
-        <th colspan="3">第二列</th>
-        <th colspan="2">第三列</th>
+        <th rowspan="3" field="name">商品名称</th>
+        <th colspan="3" field="productValue">商品属性</th>
+        <th colspan="2" field="stock">库存信息</th>
     </tr>
     <tr>
-        <th colspan="2">第一列</th>
-        <th rowspan="2">第二列</th>
-        <th rowspan="2">第三列</th>
-        <th rowspan="2">第四列</th>
-        <th rowspan="2">第五列</th>
+        <th colspan="2" field="info">基本信息</th>
+        <th rowspan="2" field="value1">高级属性一</th>
+        <th rowspan="2" field="value2">高级属性二</th>
+        <th rowspan="2" field="total">总数</th>
+        <th rowspan="2" field="left">剩余</th>
     </tr>
     <tr>
-        <th>第一列</th>
-        <th>第二列</th>
+        <th field="unit">单位</th>
+        <th field="price">单价</th>
     </tr>
     </thead>
 </table>
@@ -144,7 +143,7 @@
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
-        $("#localTable").kyDatagrid();
+        $("#localTable").kyDatagrid({url: 'data.json'});
         $("#emptyTable").kyDatagrid();
     });
 
