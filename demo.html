@@ -25,7 +25,7 @@
 <table id="localTable" enableChecked="true" singleSelect="false" rownumbers="false">
     <thead>
     <tr>
-        <th rowspan="3" field="name">商品名称</th>
+        <th rowspan="3" field="name" sortable="true">商品名称</th>
         <th colspan="3" field="productValue">商品属性</th>
         <th colspan="2" field="stock">库存信息</th>
     </tr>
@@ -54,7 +54,6 @@
 <script type="text/javascript">
     $(function () {
         $("#demoTable").kyDatagrid({
-            title: "办公设备",
             method: "get",
             url: 'data.json',
             data: [],
@@ -143,7 +142,111 @@
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
-        $("#localTable").kyDatagrid({url: 'data.json'});
+        var rows = [
+            {
+                "id": "4",
+                "name": "iPad",
+                "status": 1,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 613,
+                "price": "$1399.00",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 613,
+                "sell": 287,
+                "left": 326
+            },
+            {
+                "id": "5",
+                "name": "Mi Note",
+                "status": 2,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 613,
+                "price": "$1399.00",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 613,
+                "sell": 287,
+                "left": 326
+            },
+            {
+                "id": "5",
+                "name": "OPPO R11",
+                "status": 2,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 613,
+                "price": "$1399.00",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 613,
+                "sell": 287,
+                "left": 326
+            },
+            {
+                "id": "1",
+                "name": "Apple Watch",
+                "status": 1,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 36,
+                "price": "$3.99",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 36,
+                "sell": 5,
+                "left": "30+"
+            },
+            {
+                "id": "2",
+                "name": "IPhone 7 Plus",
+                "status": 1,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 108,
+                "price": "$799.00",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 108,
+                "sell": 97,
+                "left": 11
+            },
+            {
+                "id": "3",
+                "name": "Macbook Air",
+                "status": 1,
+                "productValue": "productValue",
+                "info": "some product descipt",
+                "unit": "个",
+                "num": 1036,
+                "price": "$1799.00",
+                "value1": "value1",
+                "value2": "value2",
+                "value3": "value3",
+                "stock": "how many product left",
+                "total": 1036,
+                "sell": 123,
+                "left": "900+"
+            }
+        ];
+        $("#localTable").kyDatagrid({data: rows});
         $("#emptyTable").kyDatagrid();
     });
 

@@ -168,7 +168,6 @@
         }
         var columns = [];
         // 有thead才可以实现复杂表头
-        // TODO 解析已有表格的复杂表头
         if (t.find("thead").length > 0) {
             var trs = t.find("thead tr");
             // region // 先将当前表头解析成 N 重数组
@@ -187,12 +186,13 @@
                     column.sortable = $(th).attr("sortable");
                     column.hidden = $(th).attr("hidden");
                     column.rowspan = $(th).attr("rowspan");
-                    column.colspan = $(th).attr("colspan");
+                    column.colspan = $(th).attr("colspan") > 1 ? $(th).attr("colspan") : undefined; // ie8 下获取该属性会出现默认为 1 的bug
                     column.align = $(th).attr("align");
                     tempColumns[i].push(column);
                 }
             }
             // endregion
+            console.log(JSON.stringify(tempColumns));
 
             // 然后将 N 重数组转换成一层数组
             columns = resolveColumns(tempColumns);
@@ -226,7 +226,7 @@
         // 获取外层各对象
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var kyDatagridView = kyDatagridWrap.find(".kyDatagrid-view");
-        kyDatagridWrap.addClass("kyDatagrid-table-" + $(target).attr("id"));
+        kyDatagridWrap.addClass("kyDatagrid-" + $(target).attr("id"));
         kyDatagridView.append("<div class='kyDatagrid-view-left'>")
             .append("<div class='kyDatagrid-view-right'>")
             .append("<div class='kyDatagrid-view-empty'>");
@@ -1022,7 +1022,7 @@
         // 遍历添加样式
         for (var i = 0; i < styleSheet.length; i++) {
             // 补充表格 ID 前缀，防止多个表格有相同列名称时产生样式冲突
-            style.push(".kyDatagrid-table-" + $(target).attr("id") + " " + styleSheet[i]);
+            style.push(".kyDatagrid-" + $(target).attr("id") + " " + styleSheet[i]);
         }
         style.push("</style>");
         $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap .kyDatagrid-view"));
@@ -1079,12 +1079,14 @@
         index = index || 0;                 // 当前行下标
         offset = offset || 0;
         length = length || rows.length;
+        console.log("调用了一次方法");
         var curOffset = offset;
         // 获取当前行数据
         var curRows = rows[index];
         // 遍历当前行的所有列
         for (var i = 0; i < length; i++, offset++) {
             var column = curRows[offset];
+            console.log(JSON.stringify(column), "第" + (index + 1) + "行,从第" + (offset + 1) + "条开始取" + length + "条,共" + curRows.length + "条数据");
             // 是否跨列
             var colspan = 0;
             if (column.colspan != undefined) {
@@ -1092,6 +1094,7 @@
             }
             // 跨列时表示有子表头
             if (colspan > 0 && (index + 1) < rows.length) {
+                console.log("进入了这里！！！", colspan, (index + 1), rows.length);
                 column.childColumns = resolveColumns(rows, index + 1, curOffset, colspan);
                 curOffset += colspan;
             }
