@@ -29,8 +29,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 .data-table tr.hover { background-color: #f3f7f9; }
 .data-table tr.selected { background-color: #ffe48d; }
 .data-table td.center { text-align: center }
-.data-table .frozenCol { width: 35px; text-align: center; }
-.data-table .kyDatagrid-cell { padding: 0 6px; }
+.data-table .frozenCol { width: 36px; text-align: center; }
 /***********/
 /* 分页样式 */
 /***********/
@@ -64,7 +63,8 @@ table { border-collapse: collapse; border-spacing: 0; }
 .kyDatagrid-view-right .kyDatagrid-head { background: #f9fbfc; overflow: hidden; }
 .kyDatagrid-view-right .kyDatagrid-head-inner { width: 10000px; }
 .kyDatagrid-view-right .kyDatagrid-body { overflow: auto; border-top: 1px solid #e4eaec; }
-.kyDatagrid-cell { white-space: nowrap; word-wrap: normal; overflow: hidden; }
+.kyDatagrid-cell { padding: 0 6px; white-space: nowrap; word-wrap: normal; overflow: hidden; position: relative;}
+/* .kyDatagrid-dropdown-menu{ position: absolute; top:0; right:0px; background: url(img/ico-down.gif) no-repeat center; width:16px; height:16px; border-left:1px dotted;} */
 /***************************/
 /* webkit 浏览器的滚动条美化 */
 /***************************/

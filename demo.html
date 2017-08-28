@@ -16,12 +16,35 @@
         .btn-blue { display: inline-block; background: none; border: 1px solid #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #62a8ea; font-size: 12px; }
         .btn-blue:hover { display: inline-block; background-color: #62a8ea; height: 25px; min-width: 70px; text-align: center; line-height: 25px; color: #fff; font-size: 12px; }
 
+        .kyDatagrid-wrap{ margin-bottom:10px;}
     </style>
 </head>
 <body>
 <h1>kyDatagrid Demo</h1>
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
 <table id="demoTable"></table>
+<table id="localTable">
+    <thead>
+    <tr>
+        <th rowspan="3">第一列</th>
+        <th colspan="3">第二列</th>
+        <th colspan="2">第三列</th>
+    </tr>
+    <tr>
+        <th colspan="2">第一列</th>
+        <th rowspan="2">第二列</th>
+        <th rowspan="2">第三列</th>
+        <th rowspan="2">第四列</th>
+        <th rowspan="2">第五列</th>
+    </tr>
+    <tr>
+        <th>第一列</th>
+        <th>第二列</th>
+    </tr>
+    </thead>
+</table>
+<table id="emptyTable"></table>
+
 
 </body>
 
@@ -35,13 +58,14 @@
             title: "办公设备",
             method: "get",
             url: 'data.json',
-            data:[],
+            data: [],
             border: true,
             idField: 'id',
             pagination: true,
             singleSelect: true,
             rownumbers: true,
-            fit: true,
+            fit: false,
+            height: 400,
             enableChecked: true,
             pageNumber: 1,
             scrollBarWidth: 18,
@@ -51,9 +75,9 @@
             frozenColumns: [
                 {field: 'id', title: 'ID', width: 20, hidden: true},
                 {
-                    fiew: 'productInfo', title: '商品信息', childColumns: [
+                    field: 'productInfo', title: '商品信息', childColumns: [
                     {
-                        field: 'name', title: '商品名称', width: 60, sortable: true,
+                        field: 'name', title: '商品名称', width: 180, sortable: true,
                         formatter: function (val, row, index) {
                             return "<a href='javascript:void(0)'>" + val + "</a>";
                         }
@@ -120,6 +144,8 @@
                 alert('you click the ' + index + ' row, the row data is ' + JSON.stringify(row));
             }
         });
+        $("#localTable").kyDatagrid();
+        $("#emptyTable").kyDatagrid();
     });
 
 

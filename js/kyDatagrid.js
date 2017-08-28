@@ -29,18 +29,17 @@
             // 获取当前对象存放的 kyDatagrid 数据值,为undefined表示未初始化,否则表示已经初始化过
             var state = $.data(this, 'kyDatagrid');
 
-            if (state) {  // 不为 undefined 表示初始化过
+            if (state) {
+                // 不为 undefined 表示初始化过，仅更新配置
                 // jQuery.extend( target [, object1 ] [, objectN ] )
                 // 将两个或更多对象的内容合并到第一个对象。
                 $.extend(state.options, options);
-            } else {      // 初始化
+            } else {
+                // 初始化配置
                 options = $.extend({}, $.fn.kyDatagrid.defaults, $.fn.kyDatagrid.parseOptions(this), options);
-
-                if (options.columns == undefined) {
-                    options.columns = parseColumnOpt(this);
-                }
                 // 设置表格配置
                 $.data(this, 'kyDatagrid', {options: options, data: {total: 0, rows: []}});
+                // 初始化表格操作
                 init(this);
                 reload(this);
             }
@@ -49,24 +48,23 @@
 
     /** 表格默认配置 */
     $.fn.kyDatagrid.defaults = {
-        title: undefined,
-        url: undefined,
-        height: undefined,
-        idField: "id",
-        method: 'post',
-        queryParams: {},
-        fit: false,
-        enableChecked: false,
-        frozenColumns: [],
-        columns: [],
+        title: undefined,                 // 表格标题
+        url: undefined,                   // 异步获取数据的地址
+        idField: "id",                    // 数据的主键字段名称
+        method: 'post',                   // 异步获取数据的请求类型
+        queryParams: {},                  // 异步获取数据时的查询参数
+        fit: false,                       // 默认不自适应屏幕
+        height: 250,                       // 默认高度为250
+        enableChecked: false,             // 是否启用复选框
+        frozenColumns: [],                // 固定列配置
+        columns: [],                      // 列配置
         rownumbers: true,                 // 显示行号
         pagination: true,                 // 是否分页
-        pageNumber: 1,
-        singleSelect: true,
-        pageSize: 10,
-        scrollBarWidth: 18,
-        pageList: [10, 20, 30, 40, 50],
-        minColWidth: 100,
+        pageNumber: 1,                    // 当前页数
+        singleSelect: true,               // 是否启用单选
+        pageSize: 10,                     // 每页数据数量
+        scrollBarWidth: 18,               // 滚动条宽度
+        pageList: [10, 20, 30, 40, 50],   // 分页列记录数选项
         emptyMsg: '记录为空!',
         trAttr: function (tr, row, index) {
         },
@@ -151,7 +149,9 @@
 
     /** 格式化表格参数 */
     $.fn.kyDatagrid.parseOptions = function (target) {
-        return {};
+        var options = {};
+        options.columns = parseColumnOpt(target);
+        return options;
     };
 
     // 解析html中table的列属性配置
@@ -166,6 +166,11 @@
         // TODO 解析已有表格的复杂表头
         if (t.find("thead").length > 0) {
             var trs = t.find("thead tr");
+            // region // 先将当前表头解析成 N 重数组
+            var tempColumns = new Array(trs.length);
+            for (var i = 0; i < trs.length; i++) {
+                tempColumns[i] = [];
+            }
             for (var i = 0; i < trs.length; i++) {
                 var tr = trs[i];
                 var ths = $(tr).find("th");
@@ -174,10 +179,23 @@
                     column = {};
                     column.title = $(th).html();
                     column.field = $(th).attr("field");
-                    column.sortable = $(th).attr("sortable") == "true";
-                    columns.push(column);
+                    column.sortable = $(th).attr("sortable");
+                    column.hidden = $(th).attr("hidden");
+                    column.rowspan = $(th).attr("rowspan");
+                    column.colspan = $(th).attr("colspan");
+                    column.align = $(th).attr("align");
+                    tempColumns[i].push(column);
                 }
             }
+            // endregion
+
+            // region // 然后将 N 重数组转换成一层数组
+            columns = resolveColumns([], tempColumns);
+
+            // endregion
+
+            console.log(columns);
+
             return columns;
         }
         // 没有 thead 的时候直接获取表格第一行当做表头
@@ -189,7 +207,8 @@
                 var column = {};
                 column.title = $(th).html();
                 column.field = $(th).attr("field");
-                column.sortable = $(th).attr("sortable") == "true";
+                column.sortable = $(th).attr("sortable");
+                column.hidden = $(th).attr("hidden");
                 columns.push(column);
             }
             return columns;
@@ -237,7 +256,6 @@
         kyDatagridView.contextmenu(function (e) {
             // 获取当前点击元素
             var targetElement = e.target;
-            console.log(targetElement);
         });
     }
 
@@ -1010,6 +1028,7 @@
 
     // 递归获取columns的最深层数
     function getMaxDeepLength(columns, length) {
+        columns = columns || [];
         length = length || 0;
         // 调用默认增加一层深度，初始从 0 开始
         var maxLength = ++length;
@@ -1031,10 +1050,10 @@
 
     // 解析表头，将一层数组转换成多层数组
     function resolveHeader(columns, rows, length) {
-        // 初始为 -1 ，因为数组下标从 0 开始，方便使用
+        // 初始为 0 ，因为数组下标从 0 开始，方便使用
         length = length || 0;
 
-        // 调用默认增加一层深度，初始从 -1 开始
+        // 调用默认增加一层深度，初始从 0 开始
         var curLength = ++length;
 
         for (var i = 0; i < columns.length; i++) {
@@ -1048,9 +1067,29 @@
         return rows;
     }
 
+    // 解析列配置，将多层数组转换成一层数组
+    function resolveColumns(columns, rows, index, lenght) {
+        columns = columns || [];
+        index = index || 0;
+
+        var curRows = rows[index];
+        for (var i = 0; i < curRows.length; i++) {
+            var column = curRows[i];
+            //
+            if (column.colspan && column.colspan > 0 && index + 1 < rows.length) {
+                column.childColumns = resolveColumns([], rows, index + 1);
+            }
+            columns.push(column);
+        }
+
+        console.log("in function", index, columns);
+        return columns;
+    }
+
     // 获取当前表头跨列数量
     function getColspan(columns, length) {
         length = length || 0;
+        columns = columns || [];
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
             // 有子表头时不需要计算当前数量
@@ -1069,6 +1108,7 @@
 
     // 计算表格总宽度
     function getTotalWidth(columns) {
+        columns = columns || [];
         var totalWidth = 0;
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
@@ -1082,6 +1122,7 @@
 
     // 获取表格实际显示时的列对象
     function getRealColumns(columns, realColumns) {
+        columns = columns || [];
         realColumns = realColumns || [];
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
@@ -1099,6 +1140,7 @@
 
     // 获取可见的列
     function getVisibleColumns(columns) {
+        columns = columns || [];
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i]
             if (column.hidden) {
