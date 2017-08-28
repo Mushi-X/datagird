@@ -22,7 +22,7 @@
 <h1>kyDatagrid Demo</h1>
 <h3>Author : <a href="mailto:huzhaobin@kingyea.com.cn">Mushi</a></h3>
 <table id="demoTable"></table>
-<table id="localTable">
+<table id="localTable" enableChecked="true" singleSelect="false" rownumbers="false">
     <thead>
     <tr>
         <th rowspan="3" field="name">商品名称</th>
@@ -63,7 +63,7 @@
             pagination: true,
             singleSelect: true,
             rownumbers: true,
-            fit: false,
+            fit: true,
             height: 400,
             enableChecked: true,
             pageNumber: 1,

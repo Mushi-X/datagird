@@ -54,7 +54,7 @@
         method: 'post',                   // 异步获取数据的请求类型
         queryParams: {},                  // 异步获取数据时的查询参数
         fit: false,                       // 默认不自适应屏幕
-        height: 250,                       // 默认高度为250
+        height: 250,                      // 默认高度为250
         enableChecked: false,             // 是否启用复选框
         frozenColumns: [],                // 固定列配置
         columns: [],                      // 列配置
@@ -151,6 +151,11 @@
     $.fn.kyDatagrid.parseOptions = function (target) {
         var options = {};
         options.columns = parseColumnOpt(target);
+        options.enableChecked = $(target).attr("enableChecked") == "true";
+        options.fit = $(target).attr("fit") == "true";
+        options.rownumbers = $(target).attr("rownumbers") != "false";
+        options.pagination = $(target).attr("pagination") != "false";
+        options.singleSelect = $(target).attr("singleSelect") != "false";
         return options;
     };
 
@@ -189,13 +194,8 @@
             }
             // endregion
 
-            // region // 然后将 N 重数组转换成一层数组
+            // 然后将 N 重数组转换成一层数组
             columns = resolveColumns(tempColumns);
-
-            // endregion
-
-            console.log(columns);
-
             return columns;
         }
         // 没有 thead 的时候直接获取表格第一行当做表头
@@ -561,7 +561,7 @@
         var options = $(target).kyDatagrid('options');
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         // 是否启用 fit 适应屏幕高度
-        if (options.height || options.fit) {
+        if (options.fit || options.height) {
             // 获取屏幕高度，减去部分像素表示在屏幕下方留白，不会刚好到底部
             var screenHeight = $(window).height() - options.scrollBarWidth - 10;
             var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
@@ -572,7 +572,7 @@
             var paginationHeight = $(".pagination").height();
 
             // 包裹层高度
-            var wrapHeight = options.height || screenHeight - offsetTop
+            var wrapHeight = options.fit ? (screenHeight - offsetTop) : options.height;
             wrapHeight = wrapHeight < (headHeight + paginationHeight) ? headHeight + paginationHeight : wrapHeight;
             wrapHeight += options.scrollBarWidth;
             // 表格视图层高度
@@ -1020,7 +1020,8 @@
 
         // 遍历添加样式
         for (var i = 0; i < styleSheet.length; i++) {
-            style.push(styleSheet[i]);
+            // 补充表格 ID 前缀，防止多个表格有相同列名称时产生样式冲突
+            style.push("#" + $(target).attr("id") + " " + styleSheet[i]);
         }
         style.push("</style>");
         $(style.join("\n")).appendTo($(target).parents(".kyDatagrid-wrap .kyDatagrid-view"));
