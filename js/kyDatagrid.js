@@ -192,7 +192,6 @@
                 }
             }
             // endregion
-            console.log(JSON.stringify(tempColumns));
 
             // 然后将 N 重数组转换成一层数组
             columns = resolveColumns(tempColumns);
@@ -563,9 +562,12 @@
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         // 是否启用 fit 适应屏幕高度
         if (options.fit || options.height) {
-            // 获取屏幕高度，减去部分像素表示在屏幕下方留白，不会刚好到底部
-            var screenHeight = $(window).height() - options.scrollBarWidth - 10;
+            // 获取最大高度，减去部分像素表示在屏幕下方留白，不会刚好到底部
+            var maxHeight = kyDatagridWrap.parent().height() + kyDatagridWrap.parent().offset().top;
+            maxHeight = maxHeight > $(window).height() ? $(window).height() : maxHeight;
             var offsetTop = $(target).parents('.kyDatagrid-wrap').offset().top;
+
+            maxHeight = maxHeight - options.scrollBarWidth - 10;
 
             // 表格头部高度
             var headHeight = 35 * getMaxDeepLength(options.columns);
@@ -573,7 +575,7 @@
             var paginationHeight = $(".pagination").height();
 
             // 包裹层高度
-            var wrapHeight = options.fit ? (screenHeight - offsetTop) : options.height;
+            var wrapHeight = options.fit ? (maxHeight - offsetTop) : options.height;
             wrapHeight = wrapHeight < (headHeight + paginationHeight) ? headHeight + paginationHeight : wrapHeight;
             wrapHeight += options.scrollBarWidth;
             // 表格视图层高度
@@ -1079,14 +1081,12 @@
         index = index || 0;                 // 当前行下标
         offset = offset || 0;
         length = length || rows.length;
-        console.log("调用了一次方法");
         var curOffset = offset;
         // 获取当前行数据
         var curRows = rows[index];
         // 遍历当前行的所有列
         for (var i = 0; i < length; i++, offset++) {
             var column = curRows[offset];
-            console.log(JSON.stringify(column), "第" + (index + 1) + "行,从第" + (offset + 1) + "条开始取" + length + "条,共" + curRows.length + "条数据");
             // 是否跨列
             var colspan = 0;
             if (column.colspan != undefined) {
@@ -1094,7 +1094,6 @@
             }
             // 跨列时表示有子表头
             if (colspan > 0 && (index + 1) < rows.length) {
-                console.log("进入了这里！！！", colspan, (index + 1), rows.length);
                 column.childColumns = resolveColumns(rows, index + 1, curOffset, colspan);
                 curOffset += colspan;
             }
@@ -1172,10 +1171,11 @@
     function hideColumn(target, field) {
         var state = $.data(target, 'kyDatagrid');
         var options = state.options;
-        var columns = options.columns;
-        columns = updateColumnProp(columns, field, "hidden", true);
-        var headTable = state.headTable;
-        $(headTable).empty().append(writeTableHead(target));
+        var container = state.container;
+        var columns = updateColumnProp(options.columns, field, "hidden", true);
+        var fronzenColumns = updateColumnProp(options.frozenColumns, field, "hidden", true);
+        container.leftHead.find("table").empty().append(writeTableHead(target, fronzenColumns, true));
+        container.rightHead.find("table").empty().append(writeTableHead(target, columns));
         reload(target);
     }
 
@@ -1183,10 +1183,11 @@
     function showColumn(target, field) {
         var state = $.data(target, 'kyDatagrid');
         var options = state.options;
-        var columns = options.columns;
-        columns = updateColumnProp(columns, field, "hidden", false);
-        var headTable = state.headTable;
-        $(headTable).empty().append(writeTableHead(target));
+        var container = state.container;
+        var columns = updateColumnProp(options.columns, field, "hidden", true);
+        var fronzenColumns = updateColumnProp(options.frozenColumns, field, "hidden", true);
+        container.leftHead.find("table").empty().append(writeTableHead(target, fronzenColumns, true));
+        container.rightHead.find("table").empty().append(writeTableHead(target, columns));
         reload(target);
     }
 
