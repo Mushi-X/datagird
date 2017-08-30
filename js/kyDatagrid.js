@@ -55,6 +55,7 @@
         queryParams: {},                  // 异步获取数据时的查询参数
         fit: false,                       // 默认不自适应屏幕
         height: 250,                      // 默认高度为250
+        width: 250,                       // 默认宽度为250
         enableChecked: false,             // 是否启用复选框
         frozenColumns: [],                // 固定列配置
         columns: [],                      // 列配置
@@ -609,7 +610,7 @@
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
         var maxWidth = kyDatagridWrap.width();
         maxWidth = kyDatagridWrap.parent().width();
-        kyDatagridWrap.css("width", maxWidth);
+        kyDatagridWrap.outerWidth(maxWidth);
 
         // region // 左侧固定列宽度设置
         // 获取左侧固定列
@@ -636,11 +637,11 @@
         }
 
         // 设置左侧固定列部分容器和表格的宽度
-        kyDatagridWrap.find(".kyDatagrid-view-left").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head table").css("width", leftViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body table").css("width", leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left").outerWidth(leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head").outerWidth(leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body").outerWidth(leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-head table").outerWidth(leftViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-left .kyDatagrid-body table").outerWidth(leftViewWidth);
 
         // endregion
 
@@ -654,12 +655,12 @@
         var rightTableWidth = rightViewWidth > columnsMinWidth ? rightViewWidth : columnsMinWidth;
         rightTableWidth = rightTableWidth - options.scrollBarWidth;
         // 设置右侧表格主体部分容器和表格的宽度
-        kyDatagridWrap.find(".kyDatagrid-view-right").css("width", rightViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").css("width", rightViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").css("width", rightViewWidth + options.scrollBarWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").css("width", rightViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head table").css("width", rightTableWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body table").css("width", rightTableWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right").outerWidth(rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").outerWidth(rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").outerWidth(rightViewWidth + options.scrollBarWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").outerWidth(rightViewWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head table").outerWidth(rightTableWidth);
+        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body table").outerWidth(rightTableWidth);
 
         // 遍历设置每列宽度
         for (var i = 0; i < realColumns.length; i++) {
@@ -984,6 +985,7 @@
                         div.append(column.formatter(value, row, i))
                     }
                     else {
+                        div.attr("title", value);
                         div.html(value);
                     }
                     if (column.hidden) {
