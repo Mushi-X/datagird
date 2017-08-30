@@ -6,7 +6,7 @@ body { font-family: '微软雅黑'; }
 ul { list-style: none; }
 li { list-style: none; }
 img { border: 0; }
-a, a:focus { text-decoration: none; color: #000; outline: none;}
+a, a:focus { text-decoration: none; color: #000; outline: none; }
 a:hover { color: #ff0000; text-decoration: none; }
 table { border-collapse: collapse; border-spacing: 0; }
 .clearfix { clear: both; font-size: 1px; }
@@ -33,7 +33,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 /***********/
 /* 分页样式 */
 /***********/
-.pagination { line-height: 30px; border-width: 1px 0 0 0; border-style: solid; border-color: #e4eaec; background: #f9fbfc; overflow: hidden;}
+.pagination { line-height: 30px; border-width: 1px 0 0 0; border-style: solid; border-color: #e4eaec; background: #f9fbfc; overflow: hidden; }
 .pagination .list-show { font-size: 14px; color: #666; padding-left: 6px; }
 .pagination .page-box { height: 30px; padding: 0 5px; }
 .pagination .page-box li { float: left; cursor: pointer; background-color: #f9f9f9; text-align: center; height: 30px; margin-right: 10px; }
@@ -53,7 +53,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 /******************/
 /* kyDatagrid css */
 /******************/
-.kyDatagrid-wrap { border: 1px solid #e4eaec; }
+.kyDatagrid-wrap { border: 1px solid #e4eaec; position: relative; }
 .kyDatagrid-view { position: relative; overflow: hidden }
 .kyDatagrid-view-left { position: absolute; left: 0; overflow: hidden }
 .kyDatagrid-view-left .kyDatagrid-head { background: #f9fbfc; overflow: hidden; }
@@ -63,7 +63,9 @@ table { border-collapse: collapse; border-spacing: 0; }
 .kyDatagrid-view-right .kyDatagrid-head { background: #f9fbfc; overflow: hidden; }
 .kyDatagrid-view-right .kyDatagrid-head-inner { width: 10000px; }
 .kyDatagrid-view-right .kyDatagrid-body { overflow: auto; border-top: 1px solid #e4eaec; }
-.kyDatagrid-cell { padding: 0 6px; white-space: nowrap; word-wrap: normal; overflow: hidden; position: relative; text-overflow: ellipsis;}
+.kyDatagrid-cell { padding: 0 6px; white-space: nowrap; word-wrap: normal; overflow: hidden; position: relative; text-overflow: ellipsis; }
+.kyDatagrid-mask .loading-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000000; opacity: 0.3; z-index: 9999; filter: alpha(opacity=30); -moz-opacity: 0.3; -khtml-opacity: 0.3; }
+.kyDatagrid-mask .loading-msg { position: absolute; top: 49%; left: 49%; width: 160px; line-height: 40px; background: #ffffff; z-index: 9999; border: 2px solid #cdcdcd; text-align: center; }
 /* .kyDatagrid-dropdown-menu{ position: absolute; top:0; right:0px; background: url(img/ico-down.gif) no-repeat center; width:16px; height:16px; border-left:1px dotted;} */
 /***************************/
 /* webkit 浏览器的滚动条美化 */

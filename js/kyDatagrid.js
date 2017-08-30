@@ -35,6 +35,7 @@
                 // 将两个或更多对象的内容合并到第一个对象。
                 $.extend(state.options, options);
             } else {
+                var startTime = new Date().getTime();
                 // 初始化配置
                 options = $.extend({}, $.fn.kyDatagrid.defaults, $.fn.kyDatagrid.parseOptions(this), options);
                 // 设置表格配置
@@ -42,6 +43,7 @@
                 // 初始化表格操作
                 init(this);
                 reload(this);
+                console.log("init datagrid[#" + $(this).attr("id") + "] in " + (new Date().getTime() - startTime) + "ms");
             }
         });
     };
@@ -66,6 +68,7 @@
         pageSize: 10,                     // 每页数据数量
         scrollBarWidth: 18,               // 滚动条宽度
         pageList: [10, 20, 30, 40, 50],   // 分页列记录数选项
+        loadMsg: "加载中...",              // 加载时的提示
         emptyMsg: '记录为空!',
         trAttr: function (tr, row, index) {
         },
@@ -507,6 +510,7 @@
         // 获取表格基本配置
         var options = $(target).kyDatagrid("options");
 
+        showLoading(target);
         // 传入参数不为空时,不保存原来的查询条件
         if (params != undefined && typeof params == "object") {
             options.queryParams = params;
@@ -532,11 +536,13 @@
                     data = loadData(target, data);
                     // 回调 onloadSuccess 方法
                     options.onLoadSuccess(data.rows);
+                    removeLoading(target);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     loadData(target, []);
                     // 回调 onLoadError 方法
                     options.onLoadError();
+                    removeLoading(target);
                 }
             });
         }
@@ -546,6 +552,7 @@
             data = loadData(target, data);
             // 回调 onloadSuccess 方法
             options.onLoadSuccess(data.rows);
+            removeLoading(target);
         }
 
     }
@@ -608,8 +615,8 @@
 
         // 获取页面最大宽度。
         var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
-        var maxWidth = kyDatagridWrap.width();
-        maxWidth = kyDatagridWrap.parent().width();
+        var maxWidth = kyDatagridWrap.parent().width();
+        console.log(kyDatagridWrap.parent(), kyDatagridWrap.parent().width());
         kyDatagridWrap.outerWidth(maxWidth);
 
         // region // 左侧固定列宽度设置
@@ -649,7 +656,7 @@
         // 获取右侧表格列
         var realColumns = getVisibleColumns(getRealColumns(options.columns));
         var totalWidth = getTotalWidth(realColumns);
-        var rightViewWidth = maxWidth - leftViewWidth;
+        var rightViewWidth = maxWidth - leftViewWidth - 2;
         // 右侧表格的宽度，每列最少有100像素的宽度
         var columnsMinWidth = totalWidth;
         var rightTableWidth = rightViewWidth > columnsMinWidth ? rightViewWidth : columnsMinWidth;
@@ -1204,6 +1211,19 @@
             }
         }
         return columns;
+    }
+
+    // 显示 loading mask
+    function showLoading(target) {
+        var options = $(target).kyDatagrid('options');
+        var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
+        kyDatagridWrap.prepend("<div class='kyDatagrid-mask'><div class='loading-view'></div><div class='loading-msg'>" + options.loadMsg + "</div></div>");
+    }
+
+    // 移除 loading mask
+    function removeLoading(target) {
+        var kyDatagridWrap = $(target).parents(".kyDatagrid-wrap");
+        kyDatagridWrap.find(".kyDatagrid-mask").remove();
     }
 
 })(jQuery);
