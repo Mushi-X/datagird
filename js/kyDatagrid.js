@@ -602,7 +602,6 @@
             kyDatagridWrap.find('.kyDatagrid-view-right').css('height', viewHeight);
             kyDatagridWrap.find(".kyDatagrid-head").css("height", headHeight);
             kyDatagridWrap.find('.kyDatagrid-view-left .kyDatagrid-body').css('height', viewHeight - headHeight);
-            kyDatagridWrap.find('.kyDatagrid-view-left .kyDatagrid-body-inner').css('height', tableHeight + options.scrollBarWidth);
             kyDatagridWrap.find('.kyDatagrid-view-right .kyDatagrid-body').css('height', viewHeight - headHeight);
         }
     }
@@ -659,11 +658,15 @@
         var rightViewWidth = maxWidth - leftViewWidth - 2;
         // 右侧表格的宽度，每列最少有100像素的宽度
         var columnsMinWidth = totalWidth;
+        if (rightViewWidth > columnsMinWidth) {
+            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").css("overflow-x", "hidden");
+        } else{
+            kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").css("overflow-x", "auto");
+        }
         var rightTableWidth = rightViewWidth > columnsMinWidth ? rightViewWidth : columnsMinWidth;
         rightTableWidth = rightTableWidth - options.scrollBarWidth;
         // 设置右侧表格主体部分容器和表格的宽度
         kyDatagridWrap.find(".kyDatagrid-view-right").outerWidth(rightViewWidth);
-        kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").outerWidth(rightViewWidth);
         kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head").outerWidth(rightViewWidth + options.scrollBarWidth);
         kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-body").outerWidth(rightViewWidth);
         kyDatagridWrap.find(".kyDatagrid-view-right .kyDatagrid-head table").outerWidth(rightTableWidth);
